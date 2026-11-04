@@ -2,6 +2,12 @@
 import Button from '@/components/Button.astro';
 import CTAForm from '@/components/CTAForm.astro';
 import { site, whatsappHref } from '@/data/site';
+
+interface Props {
+  /** Slug del servicio desde el que se pide (llega a n8n como `servicio`). */
+  service?: string;
+}
+const { service } = Astro.props;
 ---
 
 <section id="diagnostico" class="final-cta" aria-labelledby="diagnostico-titulo">
@@ -30,7 +36,7 @@ import { site, whatsappHref } from '@/data/site';
     </div>
 
     <div class="final-cta__form" data-reveal>
-      <CTAForm id="diagnostico" />
+      <CTAForm id="diagnostico" service={service} />
     </div>
   </div>
 </section>

@@ -1,0 +1,87 @@
+---
+/** Lista de puntos numerados (dolores o beneficios) en columnas con líneas finas. */
+import type { Point } from '@/data/services';
+
+interface Props {
+  items: Point[];
+  /** "pain" numera con 01, 02…; "benefit" marca con un rombo de latón. */
+  variant?: 'pain' | 'benefit';
+}
+const { items, variant = 'pain' } = Astro.props;
+---
+
+<ol class:list={['points', `points--${variant}`, items.length === 4 && 'points--four']} role="list">
+  {
+    items.map((p, i) => (
+      <li class="points__item" data-reveal>
+        <p class="points__mark" aria-hidden="true">
+          {variant === 'pain' ? String(i + 1).padStart(2, '0') : '◆'}
+        </p>
+        <h3 class="h4">{p.title}</h3>
+        <p class="points__text">{p.text}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .points {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: var(--line);
+  }
+  .points--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .points__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding: var(--space-l) var(--space-l) var(--space-l) 0;
+  }
+  .points__item + .points__item {
+    padding-left: var(--space-l);
+    border-left: var(--line);
+  }
+  .points__mark {
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--c-accent);
+  }
+  .points--benefit .points__mark {
+    color: var(--c-brass);
+    font-size: 0.7rem;
+  }
+  .points__text {
+    color: var(--c-ink-soft);
+  }
+
+  @media (max-width: 1099.98px) {
+    .points--four {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .points--four .points__item:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .points--four .points__item:nth-child(n + 3) {
+      border-top: var(--line);
+    }
+  }
+  @media (max-width: 767.98px) {
+    .points,
+    .points--four {
+      grid-template-columns: 1fr;
+    }
+    .points__item,
+    .points__item + .points__item,
+    .points--four .points__item:nth-child(3) {
+      padding: var(--space-l) 0;
+      border-left: 0;
+    }
+    .points__item + .points__item {
+      border-top: var(--line);
+    }
+  }
+</style>

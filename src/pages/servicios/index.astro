@@ -1,0 +1,94 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import Steps from '@/components/Steps.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { services } from '@/data/services';
+import { steps } from '@/data/home';
+---
+
+<BaseLayout
+  title="Servicios de marketing para restaurantes | CERAMIS"
+  description="Redes sociales, reservas telefónicas con IA, reservas web y fidelización con Wallet para restaurantes, bares y cafeterías en Mallorca."
+>
+  <section class="svc-index-hero">
+    <div class="container">
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Servicios', href: '/servicios/' },
+        ]}
+      />
+      <p class="eyebrow">Servicios</p>
+      <h1>Servicios de marketing para restaurantes en <em>Mallorca</em></h1>
+      <p class="lead">
+        Captamos clientes nuevos, no dejamos escapar ni una reserva y hacemos que vuelvan. Cuatro
+        servicios que funcionan solos o juntos, desde un mismo Dashboard.
+      </p>
+    </div>
+  </section>
+
+  <section class="svc-index-list" aria-label="Lista de servicios">
+    <ul class="svc-index-grid container" role="list">
+      {
+        services.map((service, i) => (
+          <li>
+            <ServiceCard service={service} index={i} />
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="svc-index-process" aria-labelledby="proceso-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Cómo trabajamos" id="proceso-titulo">
+        <Fragment slot="title">Empezamos siempre por un <em>diagnóstico</em>.</Fragment>
+        Gratis y sin compromiso. Así sabemos qué servicio te conviene antes de proponerte nada.
+      </SectionHeader>
+      <Steps steps={steps} />
+    </div>
+  </section>
+
+  <CtaSection />
+</BaseLayout>
+
+<style>
+  .svc-index-hero {
+    padding-top: calc(var(--header-h) + var(--space-xl));
+    padding-bottom: var(--space-2xl);
+  }
+  .svc-index-hero .container {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .svc-index-hero :global(.breadcrumbs) {
+    margin-bottom: var(--space-s);
+  }
+  .svc-index-hero h1 {
+    max-width: 18ch;
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
+  }
+  .svc-index-list {
+    padding-bottom: var(--space-3xl);
+  }
+  .svc-index-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+  .svc-index-process {
+    padding-block: var(--space-3xl);
+    background: var(--c-sand);
+  }
+  .svc-index-process :global(.steps__dot) {
+    background: var(--c-sand);
+  }
+  @media (max-width: 767.98px) {
+    .svc-index-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

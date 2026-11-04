@@ -13,7 +13,7 @@ const titleId = `servicio-${service.slug}`;
 ---
 
 <article class="service-card" aria-labelledby={titleId} data-reveal>
-  <div class="service-card__media">
+  <div class="service-card__media" transition:name={`servicio-media-${service.slug}`}>
     <ServiceIllustration name={service.illustration} />
   </div>
   <div class="service-card__body">

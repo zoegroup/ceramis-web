@@ -1,0 +1,81 @@
+---
+import type { Roi } from '@/data/services';
+
+type Example = Extract<Roi, { kind: 'example' }>;
+interface Props {
+  roi: Example;
+}
+const { roi } = Astro.props;
+---
+
+<div class="roi-example" data-reveal>
+  <p class="roi-example__intro">{roi.intro}</p>
+  <dl class="roi-example__lines">
+    {
+      roi.lines.map((l) => (
+        <div>
+          <dt>{l.label}</dt>
+          <dd>{l.value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+  <dl class="roi-example__result">
+    <dt>{roi.result.label}</dt>
+    <dd>{roi.result.value}</dd>
+  </dl>
+  <p class="roi-example__note">{roi.note}</p>
+</div>
+
+<style>
+  .roi-example {
+    display: grid;
+    gap: var(--space-m);
+    max-width: 48rem;
+    padding: clamp(var(--space-m), 4vw, var(--space-xl));
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+  }
+  .roi-example__intro,
+  .roi-example__note {
+    color: var(--c-ink-soft);
+  }
+  .roi-example__note {
+    font-size: var(--fs-small);
+  }
+  .roi-example__lines div,
+  .roi-example__result {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-m);
+    padding-block: var(--space-xs);
+    border-bottom: var(--line);
+  }
+  .roi-example__lines dd {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .roi-example__result {
+    border-bottom: 0;
+    border-top: 2px solid var(--c-brass);
+    padding-top: var(--space-s);
+  }
+  .roi-example__result dt {
+    font-weight: 500;
+  }
+  .roi-example__result dd {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--c-accent);
+    white-space: nowrap;
+  }
+  @media (max-width: 479.98px) {
+    .roi-example__result {
+      flex-direction: column;
+      align-items: start;
+    }
+  }
+</style>

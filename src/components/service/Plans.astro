@@ -1,0 +1,100 @@
+---
+/** Planes desde los datos. Con 3 planes, el central va destacado con borde de latón. */
+import Button from '@/components/Button.astro';
+import type { Plan } from '@/data/services';
+
+interface Props {
+  plans: Plan[];
+}
+const { plans } = Astro.props;
+const featured = plans.length === 3 ? 1 : -1;
+---
+
+<ul class:list={['plans', `plans--${plans.length}`]} role="list">
+  {
+    plans.map((plan, i) => (
+      <li class:list={['plan', i === featured && 'plan--featured']} data-reveal>
+        {i === featured && <p class="plan__tag">Recomendado</p>}
+        <h3 class="h4">{plan.name}</h3>
+        <p class="plan__price">{plan.price}</p>
+        <ul class="plan__features" role="list">
+          {plan.features.map((f) => (
+            <li>{f}</li>
+          ))}
+        </ul>
+        <Button href="#diagnostico" variant={i === featured ? 'primary' : 'secondary'}>
+          Pedir información<span class="visually-hidden"> sobre {plan.name}</span>
+        </Button>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .plans {
+    display: grid;
+    gap: var(--space-m);
+    grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+  }
+  .plans--1 {
+    max-width: 30rem;
+  }
+  .plans--2 {
+    --cols: 2;
+    max-width: 60rem;
+  }
+  .plans--3 {
+    --cols: 3;
+  }
+  .plan {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-s);
+    padding: var(--space-l);
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+  }
+  .plan--featured {
+    border: 2px solid var(--c-brass);
+  }
+  .plan__tag {
+    position: absolute;
+    top: 0;
+    left: var(--space-l);
+    transform: translateY(-50%);
+    padding: 0.15em 0.7em;
+    background: var(--c-brass);
+    color: var(--c-ink);
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+  .plan__price {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--c-accent);
+  }
+  .plan__features {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2xs);
+    padding-block: var(--space-s);
+    border-top: var(--line);
+    color: var(--c-ink-soft);
+  }
+  .plan__features li::before {
+    content: '— ';
+    color: var(--c-brass);
+  }
+  @media (max-width: 899.98px) {
+    .plans--2,
+    .plans--3 {
+      --cols: 1;
+      max-width: 30rem;
+    }
+  }
+</style>

@@ -8,8 +8,8 @@ interface Props {
 const { transparent = false } = Astro.props;
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
-// En la home el formulario de diagnóstico está en la propia página.
-const ctaHref = path === '/' ? '#diagnostico' : primaryCta.href;
+// La home y las páginas de servicio tienen el formulario de diagnóstico en la propia página.
+const ctaHref = path === '/' || path.startsWith('/servicios/') ? '#diagnostico' : primaryCta.href;
 ---
 
 <header class="site-header" data-header data-transparent={transparent ? '' : undefined}>

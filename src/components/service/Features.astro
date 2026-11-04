@@ -1,0 +1,83 @@
+---
+import type { Feature } from '@/data/services';
+
+interface Props {
+  items: Feature[];
+}
+const { items } = Astro.props;
+const base = items.filter((f) => !f.upgrade);
+const upgrades = items.filter((f) => f.upgrade);
+---
+
+<div class="features">
+  <ul class="features__grid" role="list">
+    {
+      base.map((f) => (
+        <li class="features__item" data-reveal>
+          <h3 class="h4">{f.title}</h3>
+          <p>{f.text}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    upgrades.length > 0 && (
+      <div class="features__upgrades">
+        <p class="eyebrow">Upgrades opcionales</p>
+        <ul class="features__grid" role="list">
+          {upgrades.map((f) => (
+            <li class="features__item features__item--upgrade" data-reveal>
+              <p class="features__tag">Upgrade</p>
+              <h3 class="h4">{f.title}</h3>
+              <p>{f.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .features {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .features__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-m);
+  }
+  .features__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+  }
+  .features__item p:last-child {
+    color: var(--c-ink-soft);
+  }
+  .features__item--upgrade {
+    border-style: dashed;
+    border-color: var(--c-brass);
+  }
+  .features__upgrades {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .features__tag {
+    justify-self: start;
+    padding: 0.15em 0.6em;
+    border: 1px solid var(--c-accent);
+    border-radius: var(--radius);
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+</style>

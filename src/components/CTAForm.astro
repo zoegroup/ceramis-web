@@ -11,8 +11,10 @@ interface Props {
   /** Identificador para el campo `source` y para ids únicos si hay varios formularios. */
   id?: string;
   submitLabel?: string;
+  /** Slug del servicio de origen, si lo hay. */
+  service?: string;
 }
-const { id = 'diagnostico', submitLabel = 'Pedir mi diagnóstico gratis' } = Astro.props;
+const { id = 'diagnostico', submitLabel = 'Pedir mi diagnóstico gratis', service } = Astro.props;
 const f = (name: string) => `${id}-${name}`;
 ---
 
@@ -83,6 +85,7 @@ const f = (name: string) => `${id}-${name}`;
   </dl>
 
   <input type="hidden" name="source" value={id} />
+  {service && <input type="hidden" name="servicio" value={service} />}
 
   <div class="cta-form__actions">
     <Button type="submit" size="lg" data-submit>

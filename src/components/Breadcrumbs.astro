@@ -1,0 +1,66 @@
+---
+/** Migas de pan visibles + JSON-LD BreadcrumbList. El último elemento es la página actual. */
+import { site } from '@/data/site';
+
+interface Props {
+  items: { label: string; href: string }[];
+}
+const { items } = Astro.props;
+const base = Astro.site ?? site.url;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: item.label,
+    item: new URL(item.href, base).href,
+  })),
+};
+---
+
+<nav class="breadcrumbs" aria-label="Migas de pan">
+  <ol role="list">
+    {
+      items.map((item, i) =>
+        i < items.length - 1 ? (
+          <li>
+            <a href={item.href}>{item.label}</a>
+            <span aria-hidden="true">/</span>
+          </li>
+        ) : (
+          <li>
+            <span aria-current="page">{item.label}</span>
+          </li>
+        )
+      )
+    }
+  </ol>
+</nav>
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+
+<style>
+  .breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.6rem;
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+  li {
+    display: inline-flex;
+    gap: 0.6rem;
+  }
+  a {
+    color: var(--c-ink-soft);
+    text-decoration-color: var(--c-stone);
+  }
+  a:hover {
+    color: var(--c-ink);
+  }
+  [aria-current] {
+    color: var(--c-ink);
+  }
+</style>

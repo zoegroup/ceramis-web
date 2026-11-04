@@ -1,0 +1,112 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import Button from '@/components/Button.astro';
+import ServiceIllustration from '@/components/home/ServiceIllustration.astro';
+import { serviceHref, waitlistHref, type Service } from '@/data/services';
+import { emphasize } from '@/lib/text';
+
+interface Props {
+  service: Service;
+}
+const { service } = Astro.props;
+---
+
+<section class="service-hero">
+  <div class="service-hero__crumbs container">
+    <Breadcrumbs
+      items={[
+        { label: 'Inicio', href: '/' },
+        { label: 'Servicios', href: '/servicios/' },
+        { label: service.name, href: serviceHref(service) },
+      ]}
+    />
+  </div>
+  <div class="service-hero__inner container">
+    <div class="service-hero__text">
+      <p class="eyebrow">
+        {service.name}
+        {!service.available && <span class="service-hero__badge">Próximamente</span>}
+      </p>
+      <h1 set:html={emphasize(service.h1)} />
+      <p class="lead">{service.intro}</p>
+      <div class="service-hero__actions">
+        {
+          service.available ? (
+            <Button href="#diagnostico" size="lg">
+              Pide tu diagnóstico gratis
+            </Button>
+          ) : (
+            <Button href={waitlistHref(service)} size="lg">
+              Únete a la lista de espera
+            </Button>
+          )
+        }
+        <Button href="#como-funciona" variant="secondary" size="lg">Cómo funciona</Button>
+      </div>
+    </div>
+    <div class="service-hero__media" transition:name={`servicio-media-${service.slug}`}>
+      <ServiceIllustration name={service.illustration} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-hero {
+    padding-top: calc(var(--header-h) + var(--space-xl));
+    padding-bottom: var(--space-2xl);
+  }
+  .service-hero__crumbs {
+    margin-bottom: var(--space-l);
+  }
+  .service-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .service-hero__text {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .service-hero__text h1 {
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
+  }
+  .service-hero__badge {
+    margin-left: var(--space-xs);
+    padding: 0.2em 0.7em;
+    border: 1px solid var(--c-accent);
+    border-radius: var(--radius);
+    color: var(--c-accent);
+  }
+  .service-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-s);
+  }
+  .service-hero__media {
+    aspect-ratio: 1;
+    padding: var(--space-xl);
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+    display: grid;
+    place-items: center;
+  }
+  @media (max-width: 899.98px) {
+    .service-hero__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+    .service-hero__media {
+      aspect-ratio: 2 / 1;
+      padding: var(--space-m);
+      order: -1;
+    }
+  }
+  @media (max-width: 479.98px) {
+    .service-hero__actions :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,181 @@
+---
+/**
+ * Plantilla única de servicio (CLAUDE.md §6), alimentada por src/data/services.ts.
+ * Orden: hero · problema · beneficios · cómo funciona · características · ROI · planes · FAQ · CTA + otros servicios.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ServiceHero from '@/components/service/ServiceHero.astro';
+import PointList from '@/components/service/PointList.astro';
+import Features from '@/components/service/Features.astro';
+import RoiExample from '@/components/service/RoiExample.astro';
+import Plans from '@/components/service/Plans.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import Steps from '@/components/Steps.astro';
+import FAQ from '@/components/FAQ.astro';
+import RoiCalculator from '@/components/RoiCalculator.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import ServiceCard from '@/components/ServiceCard.astro';
+import { serviceHref, services, type Service } from '@/data/services';
+import { site } from '@/data/site';
+import { plain } from '@/lib/text';
+
+interface Props {
+  service: Service;
+}
+const { service } = Astro.props;
+const others = services.filter((s) => s.slug !== service.slug);
+const base = Astro.site ?? site.url;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: plain(service.h1),
+  serviceType: service.name,
+  description: service.metaDescription,
+  url: new URL(serviceHref(service), base).href,
+  provider: { '@type': 'ProfessionalService', name: site.name, url: site.url },
+  areaServed: [
+    { '@type': 'City', name: 'Palma' },
+    { '@type': 'AdministrativeArea', name: 'Mallorca' },
+  ],
+};
+---
+
+<BaseLayout title={service.metaTitle} description={service.metaDescription}>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+
+  <ServiceHero service={service} />
+
+  <section class="svc-section svc-section--sand" aria-labelledby="problema-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="El problema" id="problema-titulo">
+        <Fragment slot="title">Lo que te está <em>costando</em> clientes.</Fragment>
+      </SectionHeader>
+      <PointList items={service.pains} variant="pain" />
+    </div>
+  </section>
+
+  <section class="svc-section" aria-labelledby="beneficios-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Lo que cambia" id="beneficios-titulo">
+        <Fragment slot="title">Lo que <em>cambia</em> en tu restaurante.</Fragment>
+      </SectionHeader>
+      <PointList items={service.benefits} variant="benefit" />
+    </div>
+  </section>
+
+  <section id="como-funciona" class="svc-section svc-section--sand" aria-labelledby="funciona-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Cómo funciona" id="funciona-titulo">
+        <Fragment slot="title">Así de <em>sencillo</em>.</Fragment>
+      </SectionHeader>
+      <Steps steps={service.steps} />
+    </div>
+  </section>
+
+  <section class="svc-section" aria-labelledby="caracteristicas-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Características" id="caracteristicas-titulo">
+        <Fragment slot="title">Todo lo que <em>incluye</em>.</Fragment>
+      </SectionHeader>
+      <Features items={service.features} />
+    </div>
+  </section>
+
+  <section class="svc-section svc-section--sand" aria-labelledby="roi-titulo">
+    <div class="container">
+      {
+        service.roi.kind === 'calculator' ? (
+          <>
+            <SectionHeader eyebrow="Calculadora" id="roi-titulo">
+              <Fragment slot="title">¿Cuánto te cuestan las llamadas que <em>no coges</em>?</Fragment>
+              Mueve los valores con los datos de tu restaurante y mira cuánto podrías recuperar.
+            </SectionHeader>
+            <RoiCalculator />
+          </>
+        ) : (
+          <>
+            <SectionHeader eyebrow="Retorno" id="roi-titulo">
+              <Fragment slot="title">¿Cuánto <em>vale</em> para tu restaurante?</Fragment>
+            </SectionHeader>
+            <RoiExample roi={service.roi} />
+          </>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="svc-section" aria-labelledby="planes-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Planes" id="planes-titulo">
+        <Fragment slot="title">Planes y <em>precios</em>.</Fragment>
+        Te los explicamos en el diagnóstico, adaptados a tu restaurante.
+      </SectionHeader>
+      <Plans plans={service.plans} />
+    </div>
+  </section>
+
+  <section class="svc-section svc-section--sand" aria-labelledby="faq-servicio-titulo">
+    <div class="svc-faq container">
+      <SectionHeader eyebrow="Preguntas frecuentes" id="faq-servicio-titulo">
+        <Fragment slot="title">Lo que nos preguntan sobre este <em>servicio</em>.</Fragment>
+      </SectionHeader>
+      <FAQ items={service.faq} />
+    </div>
+  </section>
+
+  <CtaSection service={service.slug} />
+
+  <section class="svc-section" aria-labelledby="otros-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Otros servicios" id="otros-titulo">
+        <Fragment slot="title">Funcionan mejor <em>juntos</em>.</Fragment>
+        Todos se gestionan desde el mismo Dashboard.
+      </SectionHeader>
+      <ul class="svc-others" role="list">
+        {
+          others.map((s) => (
+            <li>
+              <ServiceCard service={s} index={services.indexOf(s)} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .svc-section {
+    padding-block: var(--space-3xl);
+  }
+  .svc-section--sand {
+    background: var(--c-sand);
+  }
+  .svc-section--sand :global(.steps__dot) {
+    background: var(--c-sand);
+  }
+  .svc-faq {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .svc-others {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+  .svc-others :global(.service-card .h3) {
+    font-size: var(--fs-h4);
+  }
+  @media (max-width: 899.98px) {
+    .svc-faq {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .svc-others {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
