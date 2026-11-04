@@ -6,6 +6,7 @@
  */
 import Button from '@/components/Button.astro';
 import { legal } from '@/data/site';
+import { services } from '@/data/services';
 
 interface Props {
   /** Identificador para el campo `source` y para ids únicos si hay varios formularios. */
@@ -13,8 +14,10 @@ interface Props {
   submitLabel?: string;
   /** Slug del servicio de origen, si lo hay. */
   service?: string;
+  /** Versión completa (/contacto/): añade "qué te interesa" y la vía de contacto preferida. */
+  full?: boolean;
 }
-const { id = 'diagnostico', submitLabel = 'Pedir mi diagnóstico gratis', service } = Astro.props;
+const { id = 'diagnostico', submitLabel = 'Pedir mi diagnóstico gratis', service, full = false } = Astro.props;
 const f = (name: string) => `${id}-${name}`;
 ---
 
@@ -51,6 +54,37 @@ const f = (name: string) => `${id}-${name}`;
       <input id={f('email')} name="email" type="email" autocomplete="email" required maxlength="160" aria-describedby={f('email-error')} />
       <p class="field__error" id={f('email-error')} data-error></p>
     </div>
+    {
+      full && (
+        <div class="field field--full">
+          <label for={f('interes')}>¿Qué te interesa?</label>
+          <select id={f('interes')} name="interes" data-interest>
+            <option value="diagnostico">No lo sé, quiero el diagnóstico</option>
+            {services.map((s) => (
+              <option value={s.slug}>
+                {s.name}
+                {!s.available && ' (próximamente)'}
+              </option>
+            ))}
+          </select>
+        </div>
+      )
+    }
+    {
+      full && (
+        <fieldset class="field field--full field--radios">
+          <legend>Prefiero que me contactéis por</legend>
+          <div class="radios">
+            {['Teléfono', 'WhatsApp', 'Email'].map((label, i) => (
+              <label class="radio">
+                <input type="radio" name="contacto_preferido" value={label.toLowerCase()} checked={i === 0} />
+                {label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )
+    }
     <div class="field field--full">
       <label for={f('mensaje')}>Mensaje <span class="field__optional">(opcional)</span></label>
       <textarea id={f('mensaje')} name="mensaje" rows="4" maxlength="2000" placeholder="Cuéntanos qué te preocupa o qué quieres mejorar."></textarea>
@@ -86,6 +120,7 @@ const f = (name: string) => `${id}-${name}`;
 
   <input type="hidden" name="source" value={id} />
   {service && <input type="hidden" name="servicio" value={service} />}
+  <input type="hidden" name="tipo" value="diagnostico" data-form-type />
 
   <div class="cta-form__actions">
     <Button type="submit" size="lg" data-submit>
@@ -125,7 +160,8 @@ const f = (name: string) => `${id}-${name}`;
     font-weight: 400;
     color: var(--c-ink-soft);
   }
-  input:not([type='checkbox']),
+  input:not([type='checkbox']):not([type='radio']),
+  select,
   textarea {
     width: 100%;
     min-height: 48px;
@@ -138,6 +174,45 @@ const f = (name: string) => `${id}-${name}`;
   }
   textarea {
     resize: vertical;
+  }
+  select {
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231E1C19' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    cursor: pointer;
+  }
+  .field--radios {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .field--radios legend {
+    padding: 0;
+    margin-bottom: var(--space-3xs);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+  .radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+  }
+  .radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    font-size: var(--fs-body);
+    font-weight: 400;
+    cursor: pointer;
+  }
+  .radio input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--c-accent);
   }
   input::placeholder,
   textarea::placeholder {

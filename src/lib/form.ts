@@ -4,6 +4,7 @@
  * - Estado global en una región aria-live (enviando, éxito, error).
  * - Antispam: honeypot `web` y tiempo mínimo desde que se carga la página.
  * - Sin endpoint: en dev se simula el envío (payload en consola); en producción, error amable.
+ * - `data-success` en el <form> cambia el mensaje de éxito (p. ej. lista de espera).
  */
 import { PUBLIC_FORM_ENDPOINT } from 'astro:env/client';
 import { whatsappHref } from '@/data/site';
@@ -110,7 +111,7 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
     const data = new FormData(form);
     // Bots: rellenan el honeypot o envían al instante. Fingimos éxito para no darles pistas.
     if (String(data.get('web') ?? '')) {
-      setStatus(status, 'success', messages.success);
+      setStatus(status, 'success', form.dataset.success ?? messages.success);
       form.reset();
       return;
     }
@@ -139,7 +140,7 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
       await send(payload);
       form.reset();
       fields.forEach((field) => showError(field, ''));
-      setStatus(status, 'success', messages.success);
+      setStatus(status, 'success', form.dataset.success ?? messages.success);
     } catch (err) {
       console.error('[form]', err);
       setStatus(status, 'error', messages.error);

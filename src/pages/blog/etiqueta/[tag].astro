@@ -1,0 +1,28 @@
+---
+import BlogIndex from '@/components/blog/BlogIndex.astro';
+import { allTags, getPosts, type Post } from '@/lib/blog';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  const tags = allTags(posts);
+  return tags.map((t) => ({
+    params: { tag: t.slug },
+    props: { active: t, tags, posts: posts.filter((p) => p.data.tags.includes(t.tag)) },
+  }));
+}
+
+interface Props {
+  active: { tag: string; slug: string };
+  tags: ReturnType<typeof allTags>;
+  posts: Post[];
+}
+const { active, tags, posts } = Astro.props;
+---
+
+<BlogIndex
+  posts={posts}
+  tags={tags}
+  active={active}
+  title={`${active.tag}: artículos del blog | CERAMIS`}
+  description={`Artículos sobre ${active.tag.toLowerCase()} para restaurantes, bares y cafeterías en Mallorca.`}
+/>

@@ -1,0 +1,13 @@
+---
+import BlogIndex from '@/components/blog/BlogIndex.astro';
+import { allTags, getPosts } from '@/lib/blog';
+
+const posts = await getPosts();
+---
+
+<BlogIndex
+  posts={posts}
+  tags={allTags(posts)}
+  title="Blog de marketing para restaurantes | CERAMIS"
+  description="Ideas prácticas para llenar tu restaurante en Mallorca: reservas, redes sociales, fidelización y cuentas claras. Sin humo."
+/>

@@ -1,0 +1,80 @@
+---
+import LegalLayout from '@/layouts/LegalLayout.astro';
+import { legal, site } from '@/data/site';
+
+const sections = [
+  { id: 'resumen', title: 'En resumen' },
+  { id: 'que-son', title: 'Qué son las cookies' },
+  { id: 'que-usamos', title: 'Qué usamos en esta web' },
+  { id: 'tabla', title: 'Cookies instaladas' },
+  { id: 'gestionar', title: 'Cómo gestionarlas' },
+  { id: 'cambios', title: 'Cambios' },
+];
+---
+
+<LegalLayout
+  title="Política de cookies"
+  seoTitle="Política de cookies | CERAMIS"
+  description="La web de The CERAMIS Agency no usa cookies. Te explicamos qué tecnologías usamos y por qué no necesitas aceptar nada."
+  path="/cookies/"
+  updated={new Date('2026-11-04')}
+  sections={sections}
+>
+  <h2 id="resumen">En resumen</h2>
+  <p>
+    <strong>Esta web no instala cookies</strong>, ni propias ni de terceros. Por eso no te mostramos ningún banner de
+    consentimiento.
+  </p>
+
+  <h2 id="que-son">Qué son las cookies</h2>
+  <p>
+    Son pequeños archivos que algunas webs guardan en tu navegador para recordar información sobre tu visita, por
+    ejemplo para mostrarte publicidad o medir tu comportamiento. Su uso está regulado por el artículo 22.2 de la
+    LSSI-CE.
+  </p>
+
+  <h2 id="que-usamos">Qué usamos en esta web</h2>
+  <ul>
+    <li>
+      <strong>Analítica sin cookies:</strong> usamos Cloudflare Web Analytics, que mide visitas de forma agregada sin
+      guardar cookies ni identificarte.
+    </li>
+    <li>
+      <strong>Fuentes alojadas en nuestro servidor:</strong> no cargamos tipografías desde Google ni de otros
+      servidores externos.
+    </li>
+    <li>
+      <strong>Sin píxeles de publicidad</strong> (Meta, Google Ads, TikTok…) ni vídeos incrustados de terceros.
+    </li>
+    <li>
+      <strong>Mapa:</strong> es una imagen estática; no se carga Google Maps hasta que tú pulsas el enlace.
+    </li>
+  </ul>
+
+  <h2 id="tabla">Cookies instaladas</h2>
+  <table>
+    <thead>
+      <tr><th>Nombre</th><th>Proveedor</th><th>Finalidad</th><th>Duración</th></tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4">Ninguna.</td></tr>
+    </tbody>
+  </table>
+  <p>
+    Si en el futuro añadimos alguna cookie que no sea técnica, actualizaremos esta tabla y te pediremos el
+    consentimiento antes de instalarla.
+  </p>
+
+  <h2 id="gestionar">Cómo gestionarlas</h2>
+  <p>
+    Aunque esta web no usa cookies, puedes configurar tu navegador para bloquearlas o borrarlas en cualquier web desde
+    sus ajustes de privacidad.
+  </p>
+
+  <h2 id="cambios">Cambios</h2>
+  <p>
+    Si cambiamos algo, lo verás reflejado en esta página con su fecha de actualización. Dudas en
+    <a href={`mailto:${legal.email}`}>{legal.email}</a>. Más información en la
+    <a href="/privacidad/">política de privacidad</a> de {site.shortName}.
+  </p>
+</LegalLayout>

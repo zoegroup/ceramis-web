@@ -19,6 +19,9 @@ export const site = {
     whatsappText: 'Hola, quiero pedir el diagnóstico gratis para mi restaurante.',
     city: 'Palma de Mallorca',
     region: 'Illes Balears',
+    hours: [{ days: 'Lunes a viernes', time: '9:00–18:00 [VALIDAR]' }],
+    /** Hasta tener [DOMICILIO]: el mapa y las indicaciones apuntan al centro de Palma. */
+    mapsHref: 'https://www.google.com/maps/search/?api=1&query=Palma+de+Mallorca',
   },
   social: [
     { label: 'Instagram', href: 'https://instagram.com/[USUARIO]' },

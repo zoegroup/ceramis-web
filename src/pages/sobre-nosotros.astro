@@ -1,0 +1,315 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import LogoGrid from '@/components/LogoGrid.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { values } from '@/data/values';
+import { nameStory, team, whyHospitality } from '@/data/about';
+---
+
+<BaseLayout
+  title="Sobre nosotros: marketing solo para hostelería | CERAMIS"
+  description="Somos una agencia joven de Palma que solo trabaja con bares, cafeterías y restaurantes. Esta es la historia de CERAMIS y la gente que hay detrás."
+>
+  <section class="about-hero">
+    <div class="container">
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Sobre nosotros', href: '/sobre-nosotros/' },
+        ]}
+      />
+      <div class="about-hero__inner">
+        <div class="about-hero__text">
+          <p class="eyebrow">Sobre nosotros</p>
+          <h1>Una agencia joven que solo trabaja con <em>hostelería</em></h1>
+          <p class="lead">
+            Somos de Palma, trabajamos mucho y no vendemos humo. Ayudamos a bares, cafeterías y restaurantes de
+            Mallorca a captar clientes nuevos y a que vuelvan.
+          </p>
+        </div>
+        <LogoGrid class="about-hero__grid" />
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section about-section--sand" aria-labelledby="nombre-titulo">
+    <div class="about-story container">
+      <SectionHeader eyebrow="El nombre" id="nombre-titulo">
+        <Fragment slot="title">Por qué nos llamamos <em>CERAMIS</em>.</Fragment>
+      </SectionHeader>
+      <div class="about-story__body" data-reveal>
+        {nameStory.paragraphs.map((p) => <p>{p}</p>)}
+        <figure class="about-story__quote">
+          <blockquote>
+            <p>“{nameStory.quote}”</p>
+          </blockquote>
+          <figcaption>{nameStory.quoteAuthor}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section" aria-labelledby="valores-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Valores" id="valores-titulo">
+        <Fragment slot="title">Siete letras, <em>catorce</em> palabras.</Fragment>
+        Cada letra del nombre son dos palabras. Así trabajamos.
+      </SectionHeader>
+      <ol class="about-values" role="list">
+        {
+          values.map((v) => (
+            <li class="about-value" data-reveal>
+              <p class="about-value__letter" aria-hidden="true">
+                {v.letter}
+              </p>
+              <h3 class="h4">
+                <span class="visually-hidden">{v.letter}: </span>
+                {v.words[0]} <span class="about-value__dot" aria-hidden="true">·</span> {v.words[1]}
+              </h3>
+              <p class="about-value__text">{v.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="about-section about-section--sand" aria-labelledby="equipo-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Equipo" id="equipo-titulo">
+        <Fragment slot="title">Las personas detrás de <em>tu</em> marketing.</Fragment>
+      </SectionHeader>
+      <ul class="about-team" role="list">
+        {
+          team.map((m) => (
+            <li class="about-member" data-reveal>
+              <div class="about-member__photo">
+                {m.photo ? (
+                  <Image src={m.photo} alt={`Foto de ${m.name}`} widths={[320, 640]} sizes="(min-width: 900px) 30vw, 100vw" />
+                ) : (
+                  <LogoGrid />
+                )}
+              </div>
+              <h3 class="h4">{m.name}</h3>
+              <p class="about-member__role">{m.role}</p>
+              <p class="about-member__bio">{m.bio}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="about-section" aria-labelledby="hosteleria-titulo">
+    <div class="container">
+      <SectionHeader eyebrow="Por qué solo hostelería" id="hosteleria-titulo">
+        <Fragment slot="title">Un solo sector. <em>Todo</em> nuestro foco.</Fragment>
+      </SectionHeader>
+      <ol class="about-why" role="list">
+        {
+          whyHospitality.map((w, i) => (
+            <li class="about-why__item" data-reveal>
+              <p class="about-why__index" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </p>
+              <h3 class="h4">{w.title}</h3>
+              <p>{w.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <CtaSection />
+</BaseLayout>
+
+<style>
+  .about-hero {
+    padding-top: calc(var(--header-h) + var(--space-xl));
+    padding-bottom: var(--space-2xl);
+  }
+  .about-hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: var(--space-2xl);
+    align-items: center;
+    margin-top: var(--space-l);
+  }
+  .about-hero__text {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .about-hero__text h1 {
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
+  }
+  .about-hero :global(.about-hero__grid) {
+    width: min(100%, 26rem);
+    justify-self: end;
+  }
+
+  .about-section {
+    padding-block: var(--space-3xl);
+  }
+  .about-section--sand {
+    background: var(--c-sand);
+  }
+
+  .about-story {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .about-story__body {
+    display: grid;
+    gap: var(--space-m);
+    font-size: var(--fs-lead);
+    line-height: 1.6;
+  }
+  .about-story__quote {
+    margin-top: var(--space-m);
+    padding-left: var(--space-m);
+    border-left: 2px solid var(--c-brass);
+  }
+  .about-story__quote p {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-size: var(--fs-h4);
+    color: var(--c-accent);
+  }
+  .about-story__quote figcaption {
+    margin-top: var(--space-2xs);
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+
+  .about-values {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-m);
+  }
+  .about-value {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2xs);
+    padding: var(--space-l);
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+  }
+  .about-value__letter {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--c-accent);
+  }
+  .about-value__dot {
+    color: var(--c-brass);
+  }
+  .about-value__text {
+    color: var(--c-ink-soft);
+  }
+
+  .about-team {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-l);
+  }
+  .about-member {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2xs);
+  }
+  .about-member__photo {
+    margin-bottom: var(--space-s);
+    aspect-ratio: 4 / 5;
+    display: grid;
+    place-items: center;
+    padding: 18%;
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .about-member__photo :global(.logo-grid) {
+    width: 100%;
+    opacity: 0.35;
+  }
+  .about-member__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .about-member__photo:has(img) {
+    padding: 0;
+  }
+  .about-member__role {
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+  .about-member__bio {
+    color: var(--c-ink-soft);
+  }
+
+  .about-why {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: var(--line);
+  }
+  .about-why__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding: var(--space-l) var(--space-l) var(--space-l) 0;
+  }
+  .about-why__item + .about-why__item {
+    padding-left: var(--space-l);
+    border-left: var(--line);
+  }
+  .about-why__index {
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--c-accent);
+  }
+  .about-why__item p:last-child {
+    color: var(--c-ink-soft);
+  }
+
+  @media (max-width: 899.98px) {
+    .about-hero__inner,
+    .about-story {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+    .about-story {
+      gap: 0;
+    }
+    .about-hero :global(.about-hero__grid) {
+      width: min(60%, 16rem);
+      justify-self: start;
+    }
+    .about-team,
+    .about-why {
+      grid-template-columns: 1fr;
+    }
+    .about-team {
+      max-width: 26rem;
+    }
+    .about-why__item,
+    .about-why__item + .about-why__item {
+      padding: var(--space-l) 0;
+      border-left: 0;
+    }
+    .about-why__item + .about-why__item {
+      border-top: var(--line);
+    }
+  }
+</style>

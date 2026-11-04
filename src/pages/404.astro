@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import LogoGrid from '@/components/LogoGrid.astro';
+
+// La rejilla del logo, "desordenada".
+const shuffled = ['S', 'agency', 'E', 'M', 'R', 'C', 'THE', 'I', 'A'] as const;
+---
+
+<BaseLayout title="Página no encontrada | CERAMIS" description="Esta página no existe o se ha movido." noindex>
+  <section class="not-found">
+    <div class="not-found__inner container">
+      <LogoGrid cells={shuffled} class="not-found__grid" />
+      <div class="not-found__text">
+        <p class="eyebrow">Error 404</p>
+        <h1>Esta mesa no está <em>reservada</em></h1>
+        <p class="lead">La página que buscas no existe o se ha movido. Te llevamos a un sitio mejor:</p>
+        <div class="not-found__actions">
+          <Button href="/" size="lg">Volver al inicio</Button>
+          <Button href="/servicios/" variant="secondary" size="lg">Ver servicios</Button>
+        </div>
+        <p class="not-found__contact">¿Buscabas algo concreto? <a href="/contacto/">Escríbenos</a>.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    align-items: center;
+    min-height: 100svh;
+    padding-top: calc(var(--header-h) + var(--space-xl));
+    padding-bottom: var(--space-2xl);
+  }
+  .not-found__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+  .not-found :global(.not-found__grid) {
+    width: min(100%, 24rem);
+    transform: rotate(-4deg);
+  }
+  .not-found__text {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .not-found__text h1 {
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
+  }
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-s);
+  }
+  .not-found__contact {
+    color: var(--c-ink-soft);
+  }
+  @media (max-width: 767.98px) {
+    .not-found__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+    .not-found :global(.not-found__grid) {
+      width: min(55%, 14rem);
+    }
+  }
+</style>

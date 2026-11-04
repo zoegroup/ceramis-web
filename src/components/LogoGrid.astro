@@ -1,0 +1,52 @@
+---
+/**
+ * Rejilla 3×3 del logo como motivo gráfico (decorativa).
+ * `cells` permite reordenar las letras (p. ej. la 404 "desordenada").
+ */
+import { valuesGridLayout } from '@/data/values';
+
+interface Props {
+  cells?: readonly string[];
+  class?: string;
+}
+const { cells = valuesGridLayout, class: className } = Astro.props;
+---
+
+<div class:list={['logo-grid', className]} aria-hidden="true">
+  {
+    cells.map((c) => (
+      <span class:list={['logo-grid__cell', c === 'THE' && 'is-the', c === 'agency' && 'is-agency']}>{c}</span>
+    ))
+  }
+</div>
+
+<style>
+  .logo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    aspect-ratio: 1;
+    padding: 6%;
+    border: 2px solid var(--c-ink);
+    container-type: inline-size;
+  }
+  .logo-grid__cell {
+    display: grid;
+    place-items: center;
+    font-size: 20cqi;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--c-ink);
+  }
+  .is-the {
+    font-size: 5.5cqi;
+    letter-spacing: 0.04em;
+    color: var(--c-ink-soft);
+  }
+  .is-agency {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 7cqi;
+    color: var(--c-ink-soft);
+  }
+</style>

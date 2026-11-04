@@ -1,0 +1,149 @@
+---
+/** Índice del blog (todas las entradas o filtradas por etiqueta). */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import PostCard from '@/components/blog/PostCard.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { allTags, type Post } from '@/lib/blog';
+
+interface Props {
+  posts: Post[];
+  tags: ReturnType<typeof allTags>;
+  /** Etiqueta activa (página /blog/etiqueta/<slug>/). */
+  active?: { tag: string; slug: string };
+  title: string;
+  description: string;
+}
+const { posts, tags, active, title, description } = Astro.props;
+// Sin filtro, el más reciente va destacado.
+const first = active ? undefined : posts[0];
+const rest = active ? posts : posts.slice(1);
+const crumbs = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Blog', href: '/blog/' },
+  ...(active ? [{ label: active.tag, href: `/blog/etiqueta/${active.slug}/` }] : []),
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="blog-hero">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <p class="eyebrow">Blog</p>
+      {
+        active ? (
+          <h1>
+            Artículos sobre <em>{active.tag.toLowerCase()}</em>
+          </h1>
+        ) : (
+          <h1>
+            Marketing para restaurantes, <em>sin humo</em>
+          </h1>
+        )
+      }
+      <p class="lead">
+        Ideas prácticas y cuentas claras para llenar tu restaurante en Mallorca: reservas, redes y clientes que
+        vuelven.
+      </p>
+      <nav class="blog-tags" aria-label="Filtrar por etiqueta">
+        <ul role="list">
+          <li>
+            <a href="/blog/" aria-current={!active ? 'page' : undefined}>Todos</a>
+          </li>
+          {
+            tags.map((t) => (
+              <li>
+                <a href={`/blog/etiqueta/${t.slug}/`} aria-current={active?.slug === t.slug ? 'page' : undefined}>
+                  {t.tag} <span class="blog-tags__count">({t.count})</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <section class="blog-list" aria-label="Artículos">
+    <div class="container">
+      {first && <PostCard post={first} featured headingLevel="h2" />}
+      {
+        rest.length > 0 && (
+          <ul class="blog-grid" role="list">
+            {rest.map((p) => (
+              <li>
+                <PostCard post={p} headingLevel="h2" />
+              </li>
+            ))}
+          </ul>
+        )
+      }
+      {posts.length === 0 && <p>Todavía no hay artículos con esta etiqueta.</p>}
+    </div>
+  </section>
+
+  <CtaSection />
+</BaseLayout>
+
+<style>
+  .blog-hero {
+    padding-top: calc(var(--header-h) + var(--space-xl));
+    padding-bottom: var(--space-xl);
+  }
+  .blog-hero .container {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .blog-hero h1 {
+    max-width: 16ch;
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
+  }
+  .blog-tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-top: var(--space-s);
+  }
+  .blog-tags a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0.3em 0.9em;
+    border: var(--line);
+    border-radius: var(--radius);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .blog-tags a:hover {
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+  }
+  .blog-tags a[aria-current='page'] {
+    background: var(--c-ink);
+    border-color: var(--c-ink);
+    color: var(--c-surface);
+  }
+  .blog-tags__count {
+    margin-left: 0.25em;
+    font-weight: 400;
+    opacity: 0.75;
+  }
+  .blog-list {
+    padding-bottom: var(--space-3xl);
+  }
+  .blog-list .container {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xl) var(--space-l);
+  }
+  @media (max-width: 899.98px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

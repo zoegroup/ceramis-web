@@ -1,0 +1,216 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import Button from '@/components/Button.astro';
+import CTAForm from '@/components/CTAForm.astro';
+import { services } from '@/data/services';
+import { legal, site, whatsappHref } from '@/data/site';
+import mapa from '@/assets/contact/mapa-palma.webp';
+
+// Servicios no disponibles: con ?servicio=<slug> el formulario pasa a lista de espera.
+const waitlist = Object.fromEntries(services.filter((s) => !s.available).map((s) => [s.slug, s.name]));
+---
+
+<BaseLayout
+  title="Contacto y diagnóstico gratis | CERAMIS"
+  description="Pide tu diagnóstico gratis o escríbenos por WhatsApp. Agencia de marketing para restaurantes en Palma de Mallorca."
+>
+  <section class="contact">
+    <div class="container">
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Contacto', href: '/contacto/' },
+        ]}
+      />
+    </div>
+
+    <div class="contact__inner container">
+      <div class="contact__intro">
+        <p class="eyebrow" data-contact-eyebrow>Contacto</p>
+        <h1 data-contact-title>Hablemos de tu <em>restaurante</em></h1>
+        <p class="lead" data-contact-lead>
+          Pide tu diagnóstico gratis: en 30 minutos vemos dónde se te escapan clientes y qué haríamos primero.
+          Sin compromiso.
+        </p>
+
+        <ul class="contact__channels" role="list">
+          <li>
+            <p class="eyebrow">WhatsApp</p>
+            <Button href={whatsappHref} variant="secondary" target="_blank" rel="noopener">
+              Escríbenos por WhatsApp
+            </Button>
+          </li>
+          <li>
+            <p class="eyebrow">Email</p>
+            <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
+          </li>
+          <li>
+            <p class="eyebrow">Teléfono</p>
+            <a href={`tel:${site.contact.phone}`}>{site.contact.phone}</a>
+          </li>
+          <li>
+            <p class="eyebrow">Dónde estamos</p>
+            <p>{legal.address}<br />{site.contact.city}</p>
+          </li>
+          <li>
+            <p class="eyebrow">Horario</p>
+            {
+              site.contact.hours.map((h) => (
+                <p>
+                  {h.days}: {h.time}
+                </p>
+              ))
+            }
+          </li>
+        </ul>
+      </div>
+
+      <div id="diagnostico" class="contact__form">
+        <span id="lista-espera" class="contact__anchor" aria-hidden="true"></span>
+        <h2 class="h4" data-form-title>Pide tu diagnóstico gratis</h2>
+        <CTAForm id="contacto" full />
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-map" aria-labelledby="mapa-titulo">
+    <div class="container">
+      <h2 id="mapa-titulo" class="visually-hidden">Mapa</h2>
+      <figure class="contact-map__figure">
+        <a href={site.contact.mapsHref} target="_blank" rel="noopener" class="contact-map__link">
+          <Image
+            src={mapa}
+            alt={`Mapa del centro de ${site.contact.city}. Abre las indicaciones en Google Maps.`}
+            widths={[480, 800, 1200, 1600]}
+            sizes="(min-width: 1280px) 1280px, 100vw"
+            loading="lazy"
+          />
+        </a>
+        <figcaption>
+          <span>{site.contact.city} · <a href={site.contact.mapsHref} target="_blank" rel="noopener">Cómo llegar</a></span>
+          <span>
+            Datos del mapa ©{' '}
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+</BaseLayout>
+
+<script is:inline define:vars={{ waitlist }}>
+  // Lista de espera: /contacto/?servicio=<slug> de un servicio "próximamente".
+  // Inline para que el texto cambie antes de pintar; Astro vuelve a ejecutarlo en cada navegación.
+  (function applyContactMode() {
+    var form = document.querySelector('form[data-form]');
+    if (!form || !document.querySelector('[data-form-title]')) return;
+    var slug = new URLSearchParams(location.search).get('servicio');
+    var select = form.querySelector('[data-interest]');
+    if (slug && select && select.querySelector('option[value="' + slug + '"]')) select.value = slug;
+    var name = slug && waitlist[slug];
+    if (!name) return;
+    document.querySelector('[data-form-title]').textContent = 'Únete a la lista de espera de ' + name;
+    document.querySelector('[data-contact-eyebrow]').textContent = 'Lista de espera';
+    document.querySelector('[data-contact-lead]').textContent =
+      name + ' llega pronto. Déjanos tus datos y te avisamos los primeros, sin compromiso.';
+    form.querySelector('[data-form-type]').value = 'lista-espera';
+    form.querySelector('[data-submit-label]').textContent = 'Apuntarme a la lista de espera';
+    form.dataset.success = '¡Apuntado! Te avisaremos en cuanto ' + name + ' esté disponible.';
+  })();
+</script>
+
+<style>
+  .contact {
+    padding-top: calc(var(--header-h) + var(--space-xl));
+    padding-bottom: var(--space-2xl);
+  }
+  .contact__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--space-2xl);
+    align-items: start;
+    margin-top: var(--space-l);
+  }
+  .contact__intro {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .contact__intro h1 {
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 4.5rem);
+  }
+  .contact__channels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-l) var(--space-m);
+    margin-top: var(--space-m);
+    padding-top: var(--space-l);
+    border-top: var(--line);
+  }
+  .contact__channels li:first-child {
+    grid-column: 1 / -1;
+  }
+  .contact__channels .eyebrow {
+    margin-bottom: var(--space-2xs);
+  }
+  .contact__channels a:not(.btn) {
+    font-weight: 500;
+  }
+  .contact__form {
+    position: relative;
+    display: grid;
+    gap: var(--space-m);
+    padding: clamp(var(--space-m), 3vw, var(--space-xl));
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+    scroll-margin-top: calc(var(--header-h) + var(--space-m));
+  }
+  .contact__anchor {
+    position: absolute;
+    top: calc(-1 * (var(--header-h) + var(--space-m)));
+  }
+  .contact-map {
+    padding-bottom: var(--space-3xl);
+  }
+  .contact-map__link {
+    display: block;
+    overflow: hidden;
+    border: var(--line);
+    border-radius: var(--radius);
+  }
+  .contact-map__link :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease-out);
+  }
+  .contact-map__link:hover :global(img) {
+    transform: scale(1.02);
+  }
+  .contact-map__figure figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2xs) var(--space-m);
+    margin-top: var(--space-xs);
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+  @media (max-width: 899.98px) {
+    .contact__inner {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+  }
+  @media (max-width: 479.98px) {
+    .contact__channels {
+      grid-template-columns: 1fr;
+    }
+    .contact-map__link :global(img) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

@@ -1,0 +1,247 @@
+---
+import { Image, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import Button from '@/components/Button.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import FAQ from '@/components/FAQ.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import PostCard from '@/components/blog/PostCard.astro';
+import { formatDate, postHref, readingTime, relatedPosts, tagSlug, type Post } from '@/lib/blog';
+import { serviceHref, services } from '@/data/services';
+import { site } from '@/data/site';
+import '@/styles/prose.css';
+
+interface Props {
+  post: Post;
+  posts: Post[];
+}
+const { post, posts } = Astro.props;
+const { title, seoTitle, description, date, updated, author, tags, cover, coverAlt, faq, service: serviceSlug } = post.data;
+const service = services.find((s) => s.slug === serviceSlug);
+const related = relatedPosts(post, posts);
+const minutes = readingTime(post.body);
+const base = Astro.site ?? site.url;
+const url = new URL(postHref(post), base).href;
+const ogImage = await getImage({ src: cover, width: 1200, height: 630, fit: 'cover', format: 'png' });
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  image: new URL(ogImage.src, base).href,
+  datePublished: date.toISOString(),
+  dateModified: (updated ?? date).toISOString(),
+  author: { '@type': 'Organization', name: author, url: site.url },
+  publisher: {
+    '@type': 'Organization',
+    name: site.name,
+    logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', base).href },
+  },
+  mainEntityOfPage: url,
+  inLanguage: 'es-ES',
+  keywords: tags.join(', '),
+};
+---
+
+<BaseLayout title={seoTitle ?? title} description={description} image={ogImage.src} type="article">
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+
+  <article class="post">
+    <header class="post__header container">
+      <Breadcrumbs
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Blog', href: '/blog/' },
+          { label: title, href: postHref(post) },
+        ]}
+      />
+      <ul class="post__tags" role="list">
+        {
+          tags.map((t) => (
+            <li>
+              <a href={`/blog/etiqueta/${tagSlug(t)}/`}>{t}</a>
+            </li>
+          ))
+        }
+      </ul>
+      <h1>{title}</h1>
+      <p class="lead">{description}</p>
+      <p class="post__meta">
+        <span>{author}</span>
+        <span aria-hidden="true">·</span>
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{minutes} min de lectura</span>
+      </p>
+    </header>
+
+    <div class="post__cover container">
+      <Image
+        src={cover}
+        alt={coverAlt}
+        widths={[480, 800, 1200, 1600]}
+        sizes="(min-width: 1280px) 1200px, 100vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+
+    <div class="post__body container">
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+  </article>
+
+  {
+    service && (
+      <aside class="post__service container" aria-label="Servicio relacionado">
+        <div class="post__service-box">
+          <p class="eyebrow">Servicio relacionado</p>
+          <p class="h3">{service.name}</p>
+          <p>{service.benefit}</p>
+          <Button href={serviceHref(service)} variant="secondary">
+            Ver cómo funciona
+          </Button>
+        </div>
+      </aside>
+    )
+  }
+
+  {
+    faq && faq.length > 0 && (
+      <section class="post__faq" aria-labelledby="post-faq-titulo">
+        <div class="post__faq-inner container">
+          <SectionHeader eyebrow="Preguntas frecuentes" id="post-faq-titulo">
+            <Fragment slot="title">
+              Dudas <em>rápidas</em>.
+            </Fragment>
+          </SectionHeader>
+          <FAQ items={faq} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    related.length > 0 && (
+      <section class="post__related" aria-labelledby="relacionados-titulo">
+        <div class="container">
+          <SectionHeader eyebrow="Sigue leyendo" id="relacionados-titulo">
+            <Fragment slot="title">
+              Artículos <em>relacionados</em>.
+            </Fragment>
+          </SectionHeader>
+          <ul class="post__related-grid" role="list">
+            {related.map((p) => (
+              <li>
+                <PostCard post={p} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaSection service={service?.slug} />
+</BaseLayout>
+
+<style>
+  .post__header {
+    display: grid;
+    gap: var(--space-m);
+    max-width: 56rem;
+    padding-top: calc(var(--header-h) + var(--space-xl));
+    padding-bottom: var(--space-xl);
+  }
+  .post__header h1 {
+    font-size: clamp(2.1rem, 1.4rem + 3vw, 4rem);
+  }
+  .post__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .post__tags a {
+    display: inline-block;
+    padding: 0.35em 0.8em;
+    border: var(--line);
+    border-radius: var(--radius);
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--c-ink-soft);
+  }
+  .post__tags a:hover {
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+  }
+  .post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+  .post__cover :global(img) {
+    width: 100%;
+    height: auto;
+    border: var(--line);
+    border-radius: var(--radius);
+  }
+  .post__body {
+    padding-block: var(--space-2xl);
+  }
+  .post__body .prose {
+    margin-inline: auto;
+  }
+  .post__service {
+    padding-bottom: var(--space-2xl);
+  }
+  .post__service-box {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-s);
+    max-width: var(--measure);
+    margin-inline: auto;
+    padding: var(--space-l);
+    background: var(--c-surface);
+    border: var(--line);
+    border-left: 2px solid var(--c-brass);
+  }
+  .post__service-box p:not(.eyebrow):not(.h3) {
+    color: var(--c-ink-soft);
+  }
+  .post__faq,
+  .post__related {
+    padding-block: var(--space-3xl);
+  }
+  .post__faq {
+    background: var(--c-sand);
+  }
+  .post__faq-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .post__related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-l);
+  }
+  @media (max-width: 899.98px) {
+    .post__faq-inner {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .post__related-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

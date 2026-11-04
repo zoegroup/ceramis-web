@@ -25,7 +25,12 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   build: { format: 'directory' },
-  integrations: [mdx(), sitemap(), formEndpointWarning],
+  integrations: [
+    mdx(),
+    // Las legales llevan noindex: fuera del sitemap.
+    sitemap({ filter: (page) => !/\/(aviso-legal|privacidad|cookies)\/$/.test(page) }),
+    formEndpointWarning,
+  ],
   devToolbar: { enabled: false },
   env: {
     schema: {
