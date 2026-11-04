@@ -1,0 +1,387 @@
+---
+import Button from '@/components/Button.astro';
+import { nav, primaryCta, site } from '@/data/site';
+
+interface Props {
+  transparent?: boolean;
+}
+const { transparent = false } = Astro.props;
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<header class="site-header" data-header data-transparent={transparent ? '' : undefined}>
+  <div class="site-header__inner container">
+    <a class="site-header__logo" href="/" aria-label={`${site.name}, ir a inicio`}>
+      <img src="/brand/ceramis-logo-tinta.svg" alt="" width="64" height="64" decoding="async" />
+    </a>
+
+    <nav class="site-header__nav" aria-label="Principal">
+      <ul role="list">
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="site-header__actions">
+      <a class="site-header__client" href={site.dashboardUrl} rel="noopener">Acceso clientes</a>
+      <Button href={primaryCta.href} class="site-header__cta">Diagnóstico gratis</Button>
+      <button
+        class="site-header__burger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menu-movil"
+        data-menu-open
+      >
+        <span class="visually-hidden">Abrir menú</span>
+        <span class="burger" aria-hidden="true"><span></span><span></span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Fuera del <header>: su backdrop-filter crearía un contenedor para position: fixed. -->
+<div
+    class="mobile-menu"
+    id="menu-movil"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menú"
+    data-menu
+    hidden
+  >
+    <div class="mobile-menu__top container">
+      <a class="site-header__logo" href="/" aria-label={`${site.name}, ir a inicio`}>
+        <img src="/brand/ceramis-logo-tinta.svg" alt="" width="52" height="52" decoding="async" />
+      </a>
+      <button class="mobile-menu__close" type="button" data-menu-close>
+        <span class="visually-hidden">Cerrar menú</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"
+          ><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.5"></path></svg
+        >
+      </button>
+    </div>
+    <nav class="mobile-menu__nav container" aria-label="Principal (móvil)">
+      <ul role="list">
+        <li><a href="/" aria-current={path === '/' ? 'page' : undefined}>Inicio</a></li>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <div class="mobile-menu__bottom container">
+      <Button href={primaryCta.href} size="lg">{primaryCta.label}</Button>
+      <a class="mobile-menu__client" href={site.dashboardUrl} rel="noopener">Acceso clientes →</a>
+    </div>
+</div>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: var(--z-header);
+    height: var(--header-h);
+    transition:
+      transform 0.5s var(--ease-out),
+      background-color var(--dur-fast) ease,
+      box-shadow var(--dur-fast) ease;
+  }
+  .site-header.is-scrolled {
+    background: var(--c-bg-glass);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    box-shadow: 0 1px 0 rgb(185 174 156 / 0.6);
+  }
+  .site-header.is-hidden {
+    transform: translateY(-100%);
+  }
+  .site-header__inner {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-l);
+  }
+  .site-header__logo {
+    flex: none;
+    display: block;
+    border-radius: var(--radius);
+  }
+  .site-header__logo img {
+    width: var(--logo-h);
+    height: var(--logo-h);
+  }
+
+  .site-header__nav {
+    margin-inline: auto;
+  }
+  .site-header__nav ul {
+    display: flex;
+    gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  }
+  .site-header__nav a,
+  .site-header__client {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.5rem;
+    font-size: 0.97rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .site-header__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.25rem;
+    height: 1px;
+    background: var(--c-brass);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-out);
+  }
+  .site-header__nav a:hover::after,
+  .site-header__nav a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    margin-left: auto;
+  }
+  .site-header__nav + .site-header__actions {
+    margin-left: 0;
+  }
+  .site-header__client {
+    color: var(--c-ink-soft);
+  }
+  .site-header__client:hover {
+    color: var(--c-ink);
+  }
+
+  .site-header__burger {
+    display: none;
+    width: 48px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    margin-right: -12px;
+  }
+  .burger {
+    display: grid;
+    gap: 7px;
+    width: 26px;
+  }
+  .burger span {
+    display: block;
+    height: 1.5px;
+    background: var(--c-ink);
+  }
+  .burger span:last-child {
+    width: 70%;
+    justify-self: end;
+  }
+
+  @media (max-width: 1023.98px) {
+    .site-header__nav,
+    .site-header__client {
+      display: none;
+    }
+    .site-header__burger {
+      display: inline-flex;
+    }
+    .site-header__nav + .site-header__actions {
+      margin-left: auto;
+    }
+  }
+  @media (max-width: 559.98px) {
+    .site-header__actions :global(.site-header__cta) {
+      display: none;
+    }
+  }
+
+  /* Menú móvil */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    display: flex;
+    flex-direction: column;
+    background: var(--c-bg);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mobile-menu[hidden] {
+    display: none;
+  }
+  .mobile-menu__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-h);
+  }
+  .mobile-menu__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    margin-right: -12px;
+  }
+  .mobile-menu__nav {
+    flex: 1;
+    padding-block: var(--space-xl);
+  }
+  .mobile-menu__nav li + li {
+    border-top: var(--line);
+  }
+  .mobile-menu__nav a {
+    display: block;
+    padding-block: 0.9rem;
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: var(--tracking-tight);
+    text-decoration: none;
+  }
+  .mobile-menu__nav a[aria-current='page'] {
+    color: var(--c-accent);
+  }
+  .mobile-menu__bottom {
+    display: grid;
+    gap: var(--space-s);
+    padding-bottom: max(var(--space-l), env(safe-area-inset-bottom));
+  }
+  .mobile-menu__client {
+    justify-self: center;
+    padding: 0.75rem;
+    color: var(--c-ink-soft);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .motion-ok .mobile-menu:not([hidden]) {
+    animation: menu-in 0.45s var(--ease-out);
+  }
+  @keyframes menu-in {
+    from {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+  }
+</style>
+
+<script>
+  import { getLenis } from '@/lib/motion';
+
+  let abort: AbortController | null = null;
+
+  function setup() {
+    abort?.abort();
+    abort = new AbortController();
+    const { signal } = abort;
+
+    const header = document.querySelector<HTMLElement>('[data-header]');
+    const menu = document.querySelector<HTMLElement>('[data-menu]');
+    const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+    const closeBtn = document.querySelector<HTMLButtonElement>('[data-menu-close]');
+    if (!header || !menu || !openBtn || !closeBtn) return;
+
+    // Fondo con blur al hacer scroll; se oculta al bajar y aparece al subir.
+    let lastY = window.scrollY;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      const delta = y - lastY;
+      header.classList.toggle('is-scrolled', y > 8);
+      if (Math.abs(delta) > 4) {
+        const hide = delta > 0 && y > header.offsetHeight * 2 && !header.contains(document.activeElement);
+        header.classList.toggle('is-hidden', hide);
+        lastY = y;
+      }
+    };
+    update();
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true, signal }
+    );
+    header.addEventListener('focusin', () => header.classList.remove('is-hidden'), { signal });
+
+    // Menú móvil: diálogo con focus trap, Esc para cerrar y scroll bloqueado.
+    const focusables = () =>
+      Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'));
+
+    const open = () => {
+      menu.hidden = false;
+      openBtn.setAttribute('aria-expanded', 'true');
+      document.documentElement.style.overflow = 'hidden';
+      getLenis()?.stop();
+      closeBtn.focus();
+    };
+    const close = (restoreFocus = true) => {
+      if (menu.hidden) return;
+      menu.hidden = true;
+      openBtn.setAttribute('aria-expanded', 'false');
+      document.documentElement.style.overflow = '';
+      getLenis()?.start();
+      if (restoreFocus) openBtn.focus();
+    };
+
+    openBtn.addEventListener('click', open, { signal });
+    closeBtn.addEventListener('click', () => close(), { signal });
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) close(false);
+    }, { signal });
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        if (menu.hidden) return;
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          close();
+        } else if (e.key === 'Tab') {
+          const items = focusables();
+          const first = items[0];
+          const last = items[items.length - 1];
+          if (!first || !last) return;
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      },
+      { signal }
+    );
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => e.matches && close(false), {
+      signal,
+    });
+    document.addEventListener('astro:before-swap', () => {
+      document.documentElement.style.overflow = '';
+      abort?.abort();
+    }, { signal, once: true });
+  }
+
+  document.addEventListener('astro:page-load', setup);
+</script>

@@ -1,0 +1,65 @@
+/* Tipografía: Jost para todo, Playfair Display Italic solo en 1–2 palabras por titular */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+
+h1,
+.h1 {
+  font-size: var(--fs-h1);
+}
+h2,
+.h2 {
+  font-size: var(--fs-h2);
+  line-height: 1.08;
+}
+h3,
+.h3 {
+  font-size: var(--fs-h3);
+  line-height: 1.15;
+}
+h4,
+.h4 {
+  font-size: var(--fs-h4);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* Cursiva de acento dentro de titulares */
+:is(h1, h2, h3, h4, .h1, .h2, .h3, .h4) em {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--c-accent);
+  letter-spacing: -0.01em;
+}
+
+p {
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+  color: var(--c-ink-soft);
+}
+
+.eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  line-height: 1.4;
+  color: var(--c-ink-soft);
+}
+
+small,
+.small {
+  font-size: var(--fs-small);
+}

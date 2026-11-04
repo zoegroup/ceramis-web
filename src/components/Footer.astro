@@ -1,0 +1,128 @@
+---
+import { legalNav, nav, site, whatsappHref } from '@/data/site';
+
+const year = new Date().getFullYear();
+const services = [
+  { label: 'Gestión de redes sociales', href: '/servicios/gestion-redes-sociales/' },
+  { label: 'Reservas telefónicas con IA', href: '/servicios/reservas-telefonicas-ia/' },
+  { label: 'Reservas web', href: '/servicios/reservas-web/' },
+  { label: 'Fidelización con Wallet', href: '/servicios/fidelizacion-wallet/' },
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <a href="/" aria-label={`${site.name}, ir a inicio`}>
+          <img src="/brand/ceramis-logo-tinta.svg" alt="" width="96" height="96" loading="lazy" decoding="async" />
+        </a>
+        <p>Marketing para bares, cafeterías y restaurantes en Mallorca. Mucho trabajo y nada de humo.</p>
+      </div>
+
+      <nav class="site-footer__col" aria-labelledby="f-servicios">
+        <p class="eyebrow" id="f-servicios">Servicios</p>
+        <ul role="list">{services.map((s) => <li><a href={s.href}>{s.label}</a></li>)}</ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-labelledby="f-agencia">
+        <p class="eyebrow" id="f-agencia">Agencia</p>
+        <ul role="list">
+          {nav.filter((n) => n.href !== '/servicios/').map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href={site.dashboardUrl} rel="noopener">Acceso clientes</a></li>
+        </ul>
+      </nav>
+
+      <div class="site-footer__col">
+        <p class="eyebrow" id="f-contacto">Contacto</p>
+        <address>
+          <ul role="list" aria-labelledby="f-contacto">
+            <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
+            <li><a href={`tel:${site.contact.phone}`}>{site.contact.phone}</a></li>
+            <li><a href={whatsappHref} rel="noopener" target="_blank">WhatsApp</a></li>
+            <li>{site.contact.city}</li>
+          </ul>
+        </address>
+        <ul class="site-footer__social" role="list" aria-label="Redes sociales">
+          {site.social.map((s) => <li><a href={s.href} rel="noopener" target="_blank">{s.label}</a></li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>© {year} {site.name}</p>
+      <ul role="list" aria-label="Legal">{legalNav.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--c-sand);
+    padding-block: var(--space-2xl) var(--space-l);
+    font-size: var(--fs-small);
+  }
+  .site-footer__grid {
+    display: grid;
+    gap: var(--space-xl) var(--space-l);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .site-footer__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .site-footer__grid {
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    }
+  }
+  .site-footer__brand img {
+    width: 96px;
+    height: 96px;
+  }
+  .site-footer__brand p {
+    margin-top: var(--space-m);
+    max-width: 30ch;
+    color: var(--c-ink-soft);
+  }
+  .site-footer__col .eyebrow {
+    margin-bottom: var(--space-s);
+  }
+  .site-footer address {
+    font-style: normal;
+  }
+  .site-footer li {
+    padding-block: 0.2rem;
+  }
+  .site-footer a {
+    display: inline-block;
+    padding-block: 0.2rem;
+    text-decoration: none;
+  }
+  .site-footer a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--c-accent);
+  }
+  .site-footer__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-s);
+  }
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-m);
+    border-top: var(--line);
+    color: var(--c-ink-soft);
+  }
+  .site-footer__bottom ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+  }
+</style>

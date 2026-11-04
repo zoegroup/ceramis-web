@@ -1,0 +1,80 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { PUBLIC_CF_ANALYTICS_TOKEN } from 'astro:env/client';
+import '@fontsource/jost/latin-400.css';
+import '@fontsource/jost/latin-500.css';
+import '@fontsource/jost/latin-700.css';
+import '@fontsource/playfair-display/latin-600-italic.css';
+import '@fontsource/playfair-display/latin-700-italic.css';
+// Ruta relativa a propósito: el campo "exports" de @fontsource no expone los .woff2.
+import jost500 from '../../node_modules/@fontsource/jost/files/jost-latin-500-normal.woff2?url';
+import '@/styles/tokens.css';
+import '@/styles/base.css';
+import '@/styles/typography.css';
+import SEO, { type Props as SEOProps } from '@/components/SEO.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { site } from '@/data/site';
+
+interface Props extends SEOProps {
+  /** El header empieza transparente (p. ej. sobre el hero). */
+  transparentHeader?: boolean;
+}
+
+const { transparentHeader = false, ...seo } = Astro.props;
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F3ECDF" />
+    <script is:inline>
+      // Antes del primer pintado: clases que activan los estilos con JS/movimiento (sin saltos).
+      // `motion-ok` es la única fuente de verdad (también para lib/motion.ts).
+      // `?motion=off` fuerza la versión estática para QA.
+      (function () {
+        var set = function () {
+          var c = document.documentElement.classList;
+          var reduced =
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches || /[?&]motion=off\b/.test(location.search);
+          c.add('js');
+          c.toggle('motion-ok', !reduced);
+        };
+        set();
+        document.addEventListener('astro:after-swap', set);
+      })();
+    </script>
+    <link rel="preload" href={jost500} as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
+    <SEO {...seo} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <Header transparent={transparentHeader} />
+    <main id="contenido" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    {
+      PUBLIC_CF_ANALYTICS_TOKEN && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: PUBLIC_CF_ANALYTICS_TOKEN })}
+        />
+      )
+    }
+  </body>
+</html>
+
+<script>
+  import '@/lib/motion';
+</script>

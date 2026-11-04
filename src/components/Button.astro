@@ -1,0 +1,74 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = {
+  variant?: 'primary' | 'secondary' | 'link';
+  size?: 'md' | 'lg';
+  href?: string;
+} & Omit<HTMLAttributes<'a'> & HTMLAttributes<'button'>, 'href'>;
+
+const { variant = 'primary', size = 'md', href, class: className, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  href={href}
+  class:list={['btn', `btn--${variant}`, `btn--${size}`, className]}
+  {...(Tag === 'button' && !('type' in rest) ? { type: 'button' } : {})}
+  {...rest}
+>
+  <slot />
+</Tag>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    min-height: 48px;
+    padding: 0.8em 1.5em;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    text-align: center;
+    transition:
+      background-color var(--dur-fast) ease,
+      color var(--dur-fast) ease,
+      border-color var(--dur-fast) ease;
+  }
+  .btn--lg {
+    min-height: 56px;
+    padding-inline: 1.9em;
+    font-size: 1.0625rem;
+  }
+  .btn--primary {
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+  }
+  .btn--primary:hover {
+    background: var(--c-accent-hover);
+  }
+  .btn--secondary {
+    border-color: var(--c-ink);
+    color: var(--c-ink);
+  }
+  .btn--secondary:hover {
+    background: var(--c-ink);
+    color: var(--c-surface);
+  }
+  .btn--link {
+    min-height: 44px;
+    padding-inline: 0;
+    color: var(--c-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--c-stone);
+  }
+  .btn--link:hover {
+    text-decoration-color: var(--c-accent);
+  }
+</style>

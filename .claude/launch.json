@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ceramis-dev",
+      "runtimeExecutable": "/Users/juanmarulanda/.nvm/versions/node/v22.23.4/bin/node",
+      "runtimeArgs": ["node_modules/astro/bin/astro.mjs", "dev", "--port", "4321", "--ignore-lock"],
+      "port": 4321
+    }
+  ]
+}

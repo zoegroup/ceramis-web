@@ -1,0 +1,489 @@
+---
+/**
+ * Hero con secuencia de frames controlada por scroll (CLAUDE.md §4).
+ *
+ * Tres modos, decididos por CSS antes del primer pintado (sin saltos):
+ * - Estático (sin JS o con prefers-reduced-motion): póster + todos los textos apilados.
+ * - Animado lateral (≥768px en horizontal): canvas a pantalla completa, textos a la izquierda.
+ * - Animado apilado (<768px o vertical): bloque de imagen en medio, textos arriba y abajo.
+ */
+import Button from '@/components/Button.astro';
+import { primaryCta } from '@/data/site';
+---
+
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="hero__pin" data-hero-pin>
+    <div class="hero__stage container">
+      <div class="hero__media" data-hero-media>
+        <picture>
+          <source media="(max-width: 767.98px)" srcset="/hero/poster-mobile.webp" width="720" height="900" />
+          <img
+            class="hero__poster"
+            src="/hero/poster-desktop.webp"
+            width="1600"
+            height="900"
+            alt=""
+            fetchpriority="high"
+            decoding="async"
+          />
+        </picture>
+        <canvas class="hero__canvas" aria-hidden="true" data-hero-canvas></canvas>
+      </div>
+
+      <div class="hero__step hero__step--intro" data-step="0">
+        <div class="hero__top">
+          <p class="eyebrow">Agencia de marketing para restaurantes · Mallorca</p>
+          <h1 id="hero-title" class="hero__title">Llenamos tu restaurante. <em>Siempre.</em></h1>
+        </div>
+        <div class="hero__bottom">
+          <p class="hero__lead">Captamos clientes nuevos, llenamos tus mesas y hacemos que vuelvan.</p>
+          <div class="hero__ctas">
+            <Button href={primaryCta.href} size="lg">{primaryCta.label}</Button>
+            <Button href="#servicios" variant="secondary" size="lg">Ver servicios</Button>
+          </div>
+          <p class="hero__cue" aria-hidden="true"><span>Desliza</span><span class="hero__cue-line"></span></p>
+        </div>
+      </div>
+
+      <div class="hero__step" data-step="1">
+        <div class="hero__top">
+          <h2 class="hero__heading">Clientes que <em>vuelven</em>.</h2>
+        </div>
+        <div class="hero__bottom">
+          <p class="hero__lead">Tarjeta de fidelización en el Wallet de su móvil. Sin apps.</p>
+        </div>
+      </div>
+
+      <div class="hero__step" data-step="2">
+        <div class="hero__top">
+          <h2 class="hero__heading">Mesas que se <em>llenan</em>.</h2>
+        </div>
+        <div class="hero__bottom">
+          <p class="hero__lead">Reservas por teléfono con IA y desde tu web, 24/7.</p>
+        </div>
+      </div>
+
+      <div class="hero__step" data-step="3">
+        <div class="hero__top">
+          <h2 class="hero__heading">Marcas que se <em>ven</em>.</h2>
+        </div>
+        <div class="hero__bottom">
+          <p class="hero__lead">Contenido, redes y estrategia que atraen clientes nuevos.</p>
+        </div>
+      </div>
+
+      <div class="hero__step hero__step--final" data-step="4">
+        <div class="hero__top">
+          <h2 class="hero__heading">¿<em>Hablamos</em>?</h2>
+        </div>
+        <div class="hero__bottom">
+          <div class="hero__ctas">
+            <Button href={primaryCta.href} size="lg">{primaryCta.label}</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero__progress" aria-hidden="true"><span data-hero-bar></span></div>
+  </div>
+</section>
+
+<style>
+  /* ---------- Común ---------- */
+  .hero {
+    position: relative;
+    background: var(--c-bg);
+  }
+  .hero__media {
+    position: relative;
+    overflow: hidden;
+    background: var(--c-bg);
+  }
+  .hero__poster,
+  .hero__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .hero__poster {
+    object-fit: cover;
+  }
+  .hero__canvas {
+    display: none;
+  }
+  .hero__title {
+    font-size: var(--fs-h1);
+  }
+  .hero__heading {
+    font-size: var(--fs-h2);
+  }
+  .hero__lead {
+    font-size: var(--fs-lead);
+    line-height: 1.45;
+    color: var(--c-ink-soft);
+    max-width: 34ch;
+  }
+  .hero .eyebrow {
+    margin-bottom: var(--space-m);
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: var(--space-l);
+  }
+  .hero__cue {
+    display: none;
+  }
+  .hero__progress {
+    display: none;
+  }
+
+  /* ---------- Estático: sin JS o reduced-motion ---------- */
+  :global(html:not(.motion-ok)) .hero {
+    padding-top: calc(var(--header-h) + var(--space-l));
+    padding-bottom: var(--space-2xl);
+  }
+  :global(html:not(.motion-ok)) .hero__stage {
+    display: grid;
+    gap: var(--space-xl) var(--space-l);
+  }
+  :global(html:not(.motion-ok)) .hero__media {
+    aspect-ratio: 4 / 5;
+    margin-inline: calc(-1 * var(--gutter));
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 90%, transparent);
+  }
+  :global(html:not(.motion-ok)) .hero__step--intro {
+    order: -1;
+  }
+  :global(html:not(.motion-ok)) .hero__step:not(.hero__step--intro) {
+    padding-top: var(--space-m);
+    border-top: var(--line);
+  }
+  :global(html:not(.motion-ok)) .hero__step:not(.hero__step--intro) .hero__heading {
+    font-size: var(--fs-h3);
+    margin-bottom: var(--space-xs);
+  }
+  :global(html:not(.motion-ok)) .hero__step--final .hero__ctas {
+    margin-top: var(--space-m);
+  }
+  @media (min-width: 768px) {
+    :global(html:not(.motion-ok)) .hero__stage {
+      grid-template-columns: repeat(12, 1fr);
+      align-items: center;
+    }
+    :global(html:not(.motion-ok)) .hero__step--intro {
+      grid-column: 1 / 7;
+      grid-row: 1;
+    }
+    :global(html:not(.motion-ok)) .hero__media {
+      grid-column: 6 / 13;
+      grid-row: 1;
+      aspect-ratio: 16 / 10;
+      margin: 0 calc(-1 * var(--gutter)) 0 0;
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 25%);
+      mask-image: linear-gradient(to right, transparent, #000 25%);
+    }
+    :global(html:not(.motion-ok)) .hero__step--intro {
+      position: relative;
+      z-index: 1;
+    }
+    :global(html:not(.motion-ok)) [data-step='1'] {
+      grid-column: 1 / 5;
+    }
+    :global(html:not(.motion-ok)) [data-step='2'] {
+      grid-column: 5 / 9;
+    }
+    :global(html:not(.motion-ok)) [data-step='3'] {
+      grid-column: 9 / 13;
+    }
+    :global(html:not(.motion-ok)) .hero__step--final {
+      grid-column: 1 / 13;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-m);
+    }
+    :global(html:not(.motion-ok)) .hero__step:not(.hero__step--intro) {
+      align-self: start;
+    }
+  }
+
+  /* ---------- Animado (común a los dos layouts) ---------- */
+  :global(.motion-ok) .hero__pin {
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+  :global(.motion-ok) .hero__stage {
+    position: relative;
+    height: 100%;
+    display: grid;
+  }
+  :global(.motion-ok) .hero__canvas {
+    display: block;
+  }
+  /* Los pasos 1–4 empiezan ocultos; el timeline los muestra. */
+  :global(.motion-ok) .hero__step:not(.hero__step--intro) > * {
+    opacity: 0;
+    visibility: hidden;
+  }
+  :global(.motion-ok) .hero__progress {
+    display: block;
+    position: absolute;
+    inset: auto 0 0;
+    height: 1px;
+    background: rgb(185 174 156 / 0.35);
+  }
+  :global(.motion-ok) .hero__progress span {
+    display: block;
+    height: 100%;
+    background: var(--c-brass);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  /* ---------- Animado lateral: escritorio / tablet horizontal ---------- */
+  @media (min-width: 768px) and (orientation: landscape) {
+    :global(.motion-ok) .hero__media {
+      position: absolute;
+      inset: 0 0 0 var(--hero-media-left, 22%);
+      /* Funde el borde izquierdo y la base con el crema; disimula la viñeta del vídeo. */
+      -webkit-mask-image:
+        linear-gradient(to right, transparent, #000 26%),
+        linear-gradient(to bottom, #000 82%, transparent);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, transparent, #000 26%),
+        linear-gradient(to bottom, #000 82%, transparent);
+      mask-composite: intersect;
+    }
+    :global(.motion-ok) .hero__stage {
+      /* static: la imagen se posiciona respecto al pin (pantalla completa), no al contenedor */
+      position: static;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: center;
+      padding-top: var(--header-h);
+    }
+    :global(.motion-ok) .hero__step {
+      grid-area: 1 / 1;
+      position: relative;
+      max-width: min(40vw, 36rem);
+    }
+    :global(.motion-ok) .hero__title {
+      font-size: min(var(--fs-h1), 10.5svh);
+    }
+    :global(.motion-ok) .hero__heading {
+      font-size: min(var(--fs-h1), 11svh);
+    }
+    :global(.motion-ok) .hero__step:not(.hero__step--intro) .hero__lead {
+      margin-top: var(--space-m);
+    }
+    :global(.motion-ok) .hero__cue {
+      display: flex;
+      align-items: center;
+      gap: var(--space-s);
+      margin-top: var(--space-xl);
+      font-size: var(--fs-eyebrow);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wide);
+      color: var(--c-ink-soft);
+    }
+  }
+  @media (min-width: 768px) and (max-width: 1199.98px) and (orientation: landscape) {
+    .hero {
+      --hero-media-left: 36%;
+    }
+  }
+  @media (min-width: 768px) and (orientation: landscape) and (max-height: 620px) {
+    :global(.motion-ok) .hero .eyebrow {
+      margin-bottom: var(--space-xs);
+    }
+    :global(.motion-ok) .hero__ctas {
+      margin-top: var(--space-m);
+    }
+    :global(.motion-ok) .hero__cue {
+      display: none;
+    }
+  }
+
+  /* ---------- Animado apilado: móvil / vertical ---------- */
+  @media (max-width: 767.98px), (orientation: portrait) {
+    :global(.motion-ok) .hero__stage {
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      grid-template-columns: minmax(0, 1fr);
+      padding-top: calc(var(--header-h) + var(--space-2xs));
+      padding-bottom: max(var(--space-m), env(safe-area-inset-bottom));
+    }
+    :global(.motion-ok) .hero__media {
+      grid-row: 2;
+      grid-column: 1;
+      margin-inline: calc(-1 * var(--gutter));
+      margin-block: var(--space-xs);
+      -webkit-mask-image:
+        linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent),
+        linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent),
+        linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+      mask-composite: intersect;
+    }
+    :global(.motion-ok) .hero__step {
+      display: contents;
+    }
+    :global(.motion-ok) .hero__top {
+      grid-row: 1;
+      grid-column: 1;
+      align-self: end;
+    }
+    :global(.motion-ok) .hero__bottom {
+      grid-row: 3;
+      grid-column: 1;
+      align-self: start;
+    }
+    :global(.motion-ok) .hero .eyebrow {
+      margin-bottom: var(--space-xs);
+    }
+    :global(.motion-ok) .hero__title,
+    :global(.motion-ok) .hero__heading {
+      font-size: min(clamp(2.125rem, 1.4rem + 3.6vw, 3.75rem), 6.2svh);
+    }
+    :global(.motion-ok) .hero__lead {
+      font-size: 1.0625rem;
+    }
+    :global(.motion-ok) .hero__ctas {
+      margin-top: var(--space-s);
+    }
+  }
+  @media (max-width: 479.98px) {
+    :global(.motion-ok) .hero__ctas {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2xs);
+    }
+    :global(.motion-ok) .hero__ctas :global(.btn--secondary) {
+      min-height: 48px;
+    }
+  }
+  @media (max-width: 479.98px) and (max-height: 700px) {
+    :global(.motion-ok) .hero__step--intro .hero__ctas {
+      grid-template-columns: 1fr 1fr;
+    }
+    :global(.motion-ok) .hero__step--intro .hero__ctas :global(.btn) {
+      padding-inline: 0.75em;
+      font-size: 0.94rem;
+      min-height: 48px;
+    }
+  }
+
+  /* Indicador de scroll */
+  .hero__cue-line {
+    position: relative;
+    width: 48px;
+    height: 1px;
+    background: var(--c-stone);
+    overflow: hidden;
+  }
+  .hero__cue-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--c-brass);
+    transform: translateX(-100%);
+    animation: cue 2.4s var(--ease-out) infinite;
+  }
+  @keyframes cue {
+    60%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+</style>
+
+<script>
+  import { onMotion } from '@/lib/motion';
+  import manifest from '../../../public/hero/manifest.json';
+  import { FrameSequence, HeroRenderer } from './hero-sequence';
+
+  const STACKED = '(max-width: 767.98px), (orientation: portrait)';
+  /** Recorrido del pin en alturas de viewport (+100vh de la propia pantalla ≈ 450vh / 380vh). */
+  const PIN_DISTANCE = { side: 3.5, stacked: 2.8 };
+  /** Tramos del timeline (0–1). Fuente: tabla de textos en CLAUDE.md §4. */
+  const STEPS: Array<{ step: number; in?: number; out?: number }> = [
+    { step: 0, out: 0.07 },
+    { step: 1, in: 0.1, out: 0.19 },
+    { step: 2, in: 0.44, out: 0.59 },
+    { step: 3, in: 0.82, out: 0.93 },
+    { step: 4, in: 0.965 },
+  ];
+  const FADE = 0.03;
+
+  const sequence = new FrameSequence('/hero/', manifest.frames, manifest.pattern);
+
+  onMotion(({ gsap, reducedMotion }) => {
+    const section = document.querySelector<HTMLElement>('[data-hero]');
+    if (!section || reducedMotion) return;
+    const pin = section.querySelector<HTMLElement>('[data-hero-pin]')!;
+    const canvas = section.querySelector<HTMLCanvasElement>('[data-hero-canvas]')!;
+    const bar = section.querySelector<HTMLElement>('[data-hero-bar]');
+
+    const renderer = new HeroRenderer(canvas, sequence);
+    renderer.resize();
+
+    const playhead = { frame: 0 };
+    const stackedQuery = window.matchMedia(STACKED);
+    const distance = () => window.innerHeight * (stackedQuery.matches ? PIN_DISTANCE.stacked : PIN_DISTANCE.side);
+
+    const tl = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: () => `+=${distance()}`,
+        pin,
+        scrub: 0.5,
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+      },
+    });
+
+    tl.to(playhead, { frame: sequence.count - 1, duration: 1, onUpdate: () => renderer.render(playhead.frame) }, 0);
+    if (bar) tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0);
+
+    for (const { step, in: tIn, out: tOut } of STEPS) {
+      const parts = section.querySelectorAll(`[data-step="${step}"] > *`);
+      if (tIn !== undefined) {
+        tl.fromTo(
+          parts,
+          { autoAlpha: 0, y: 24 },
+          { autoAlpha: 1, y: 0, duration: FADE, ease: 'power3.out', stagger: FADE / 6 },
+          tIn
+        );
+      }
+      if (tOut !== undefined) {
+        tl.to(parts, { autoAlpha: 0, y: -24, duration: FADE, ease: 'power2.in' }, tOut);
+      }
+    }
+
+    if (import.meta.env.DEV) Object.assign(window, { __hero: { tl, playhead, renderer } });
+
+    let resizeTimer = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => renderer.resize(), 150);
+    };
+    window.addEventListener('resize', onResize);
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.clearTimeout(resizeTimer);
+      renderer.destroy();
+      tl.kill();
+    };
+  });
+</script>

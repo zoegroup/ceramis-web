@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroScroll from '@/components/hero/HeroScroll.astro';
+---
+
+<BaseLayout transparentHeader>
+  <link slot="head" rel="preload" as="image" href="/hero/poster-mobile.webp" media="(max-width: 767.98px)" fetchpriority="high" />
+  <link slot="head" rel="preload" as="image" href="/hero/poster-desktop.webp" media="(min-width: 768px)" fetchpriority="high" />
+  <HeroScroll />
+
+  <!-- Fase 2: resto de la home. Marcador temporal para poder probar el final del pin. -->
+  <section id="servicios" class="phase-placeholder">
+    <div class="container">
+      <p class="eyebrow">Fase 2</p>
+      <h2>Aquí llega el resto de la <em>home</em>.</h2>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .phase-placeholder {
+    min-height: 80vh;
+    padding-block: var(--space-3xl);
+    background: var(--c-sand);
+  }
+</style>
