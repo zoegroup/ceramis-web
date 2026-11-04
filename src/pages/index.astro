@@ -1,26 +1,57 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import HeroScroll from '@/components/hero/HeroScroll.astro';
+import Problems from '@/components/home/Problems.astro';
+import Services from '@/components/home/Services.astro';
+import ValuesGrid from '@/components/ValuesGrid.astro';
+import Process from '@/components/home/Process.astro';
+import CaseStudy from '@/components/home/CaseStudy.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import FAQ from '@/components/FAQ.astro';
+import FinalCta from '@/components/home/FinalCta.astro';
+import { homeFaq } from '@/data/faq';
 ---
 
 <BaseLayout transparentHeader>
   <link slot="head" rel="preload" as="image" href="/hero/poster-mobile.webp" media="(max-width: 767.98px)" fetchpriority="high" />
   <link slot="head" rel="preload" as="image" href="/hero/poster-desktop.webp" media="(min-width: 768px)" fetchpriority="high" />
   <HeroScroll />
+  <Problems />
+  <Services />
+  <ValuesGrid />
+  <Process />
+  <CaseStudy />
 
-  <!-- Fase 2: resto de la home. Marcador temporal para poder probar el final del pin. -->
-  <section id="servicios" class="phase-placeholder">
-    <div class="container">
-      <p class="eyebrow">Fase 2</p>
-      <h2>Aquí llega el resto de la <em>home</em>.</h2>
+  <section class="home-faq" aria-labelledby="faq-titulo">
+    <div class="home-faq__inner container">
+      <SectionHeader eyebrow="Preguntas frecuentes" id="faq-titulo">
+        <Fragment slot="title">Lo que nos <em>preguntan</em> antes de empezar.</Fragment>
+      </SectionHeader>
+      <FAQ items={homeFaq} />
     </div>
   </section>
+
+  <FinalCta />
 </BaseLayout>
 
 <style>
-  .phase-placeholder {
-    min-height: 80vh;
+  .home-faq {
     padding-block: var(--space-3xl);
-    background: var(--c-sand);
+  }
+  /* Si el caso real está visible, ambos van sobre crema: los separa una línea. */
+  :global(.case) + .home-faq {
+    border-top: var(--line);
+  }
+  .home-faq__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  @media (max-width: 899.98px) {
+    .home-faq__inner {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
   }
 </style>

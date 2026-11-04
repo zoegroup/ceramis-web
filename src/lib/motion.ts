@@ -65,6 +65,9 @@ async function init() {
   ctx = { gsap, ScrollTrigger, lenis, reducedMotion };
   if (import.meta.env.DEV) Object.assign(window, { __motion: { ctx, generation } });
   modules.forEach((mod) => runModule(mod));
+  // Los módulos no se registran en el orden de la página: ordena los triggers por posición
+  // para que los que van tras un pin (hero, valores) calculen bien su inicio.
+  ScrollTrigger.sort();
   ScrollTrigger.refresh();
 }
 
@@ -104,6 +107,7 @@ export function onMotion(mod: MotionModule) {
   // Si la página ya está inicializada (el script se evaluó tarde), ejecútalo ya.
   if (ctx) {
     runModule(mod);
+    ctx.ScrollTrigger.sort();
     ctx.ScrollTrigger.refresh();
   }
 }

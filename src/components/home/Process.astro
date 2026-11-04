@@ -1,0 +1,25 @@
+---
+import SectionHeader from '@/components/SectionHeader.astro';
+import Steps from '@/components/Steps.astro';
+import { steps } from '@/data/home';
+---
+
+<section class="process" aria-labelledby="proceso-titulo">
+  <div class="container">
+    <SectionHeader eyebrow="Cómo trabajamos" id="proceso-titulo">
+      <Fragment slot="title">De la primera charla a las <em>mesas llenas</em>.</Fragment>
+      Cuatro pasos, sin letra pequeña. Tú decides en cada uno si seguimos.
+    </SectionHeader>
+    <Steps steps={steps} />
+  </div>
+</section>
+
+<style>
+  .process {
+    padding-block: var(--space-3xl);
+    background: var(--c-sand);
+  }
+  .process :global(.steps__dot) {
+    background: var(--c-sand);
+  }
+</style>

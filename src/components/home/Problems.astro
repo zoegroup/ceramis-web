@@ -1,0 +1,91 @@
+---
+import SectionHeader from '@/components/SectionHeader.astro';
+import { problems } from '@/data/home';
+---
+
+<section class="problems" aria-labelledby="problemas-titulo">
+  <div class="container">
+    <SectionHeader eyebrow="El problema" id="problemas-titulo">
+      <Fragment slot="title">Tres fugas que cuestan <em>dinero</em> cada semana.</Fragment>
+      No es falta de calidad. Es que hay clientes que se te escapan sin que lo veas.
+    </SectionHeader>
+
+    <ol class="problems__list" role="list">
+      {
+        problems.map((p, i) => (
+          <li class="problems__item" data-reveal>
+            <p class="problems__index" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </p>
+            <h3 class="h4">{p.title}</h3>
+            <p class="problems__figure">
+              <strong>{p.figure}</strong>
+              <span>{p.figureLabel}</span>
+            </p>
+            <p class="problems__text">{p.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .problems {
+    padding-block: var(--space-3xl);
+  }
+  .problems__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: var(--line);
+  }
+  .problems__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-s);
+    padding: var(--space-l) var(--space-l) var(--space-xl) 0;
+  }
+  .problems__item + .problems__item {
+    padding-left: var(--space-l);
+    border-left: var(--line);
+  }
+  .problems__index {
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--c-ink-soft);
+  }
+  .problems__figure {
+    display: grid;
+    gap: var(--space-3xs);
+    padding-block: var(--space-s);
+  }
+  .problems__figure strong {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--c-accent);
+  }
+  .problems__figure span {
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+  .problems__text {
+    color: var(--c-ink-soft);
+  }
+
+  @media (max-width: 899.98px) {
+    .problems__list {
+      grid-template-columns: 1fr;
+    }
+    .problems__item,
+    .problems__item + .problems__item {
+      padding: var(--space-l) 0;
+      border-left: 0;
+    }
+    .problems__item + .problems__item {
+      border-top: var(--line);
+    }
+  }
+</style>

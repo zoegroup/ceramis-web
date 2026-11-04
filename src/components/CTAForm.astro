@@ -1,0 +1,250 @@
+---
+/**
+ * Formulario de diagnóstico. Lo reutiliza /contacto/ en la Fase 4.
+ * Envío y validación en src/lib/form.ts (sin JS, el navegador valida los `required`
+ * y el envío queda bloqueado con un aviso: no hay acción de servidor en un sitio estático).
+ */
+import Button from '@/components/Button.astro';
+import { legal } from '@/data/site';
+
+interface Props {
+  /** Identificador para el campo `source` y para ids únicos si hay varios formularios. */
+  id?: string;
+  submitLabel?: string;
+}
+const { id = 'diagnostico', submitLabel = 'Pedir mi diagnóstico gratis' } = Astro.props;
+const f = (name: string) => `${id}-${name}`;
+---
+
+<form class="cta-form" data-form novalidate aria-describedby={f('nota')}>
+  <p class="cta-form__note" id={f('nota')}>Todos los campos son obligatorios salvo el mensaje.</p>
+
+  <div class="cta-form__grid">
+    <div class="field">
+      <label for={f('nombre')}>Nombre</label>
+      <input id={f('nombre')} name="nombre" type="text" autocomplete="name" required maxlength="120" aria-describedby={f('nombre-error')} />
+      <p class="field__error" id={f('nombre-error')} data-error></p>
+    </div>
+    <div class="field">
+      <label for={f('restaurante')}>Restaurante</label>
+      <input id={f('restaurante')} name="restaurante" type="text" autocomplete="organization" required maxlength="160" aria-describedby={f('restaurante-error')} />
+      <p class="field__error" id={f('restaurante-error')} data-error></p>
+    </div>
+    <div class="field">
+      <label for={f('telefono')}>Teléfono</label>
+      <input
+        id={f('telefono')}
+        name="telefono"
+        type="tel"
+        autocomplete="tel"
+        inputmode="tel"
+        required
+        maxlength="20"
+        aria-describedby={f('telefono-error')}
+      />
+      <p class="field__error" id={f('telefono-error')} data-error></p>
+    </div>
+    <div class="field">
+      <label for={f('email')}>Email</label>
+      <input id={f('email')} name="email" type="email" autocomplete="email" required maxlength="160" aria-describedby={f('email-error')} />
+      <p class="field__error" id={f('email-error')} data-error></p>
+    </div>
+    <div class="field field--full">
+      <label for={f('mensaje')}>Mensaje <span class="field__optional">(opcional)</span></label>
+      <textarea id={f('mensaje')} name="mensaje" rows="4" maxlength="2000" placeholder="Cuéntanos qué te preocupa o qué quieres mejorar."></textarea>
+    </div>
+  </div>
+
+  <!-- Honeypot: invisible para personas, tentador para bots. -->
+  <div class="cta-form__hp" aria-hidden="true">
+    <label for={f('web')}>No rellenes este campo</label>
+    <input id={f('web')} name="web" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="field field--check">
+    <input id={f('privacidad')} name="privacidad" type="checkbox" required aria-describedby={`${f('privacidad-error')} ${f('rgpd')}`} />
+    <label for={f('privacidad')}>
+      He leído y acepto la <a href="/privacidad/">política de privacidad</a>.
+    </label>
+    <p class="field__error" id={f('privacidad-error')} data-error></p>
+  </div>
+
+  <dl class="cta-form__rgpd" id={f('rgpd')}>
+    <div><dt>Responsable</dt><dd>{legal.company}</dd></div>
+    <div><dt>Finalidad</dt><dd>Responder a tu solicitud y preparar tu diagnóstico.</dd></div>
+    <div><dt>Legitimación</dt><dd>Tu consentimiento.</dd></div>
+    <div><dt>Destinatarios</dt><dd>No cedemos tus datos a terceros, salvo obligación legal.</dd></div>
+    <div>
+      <dt>Derechos</dt>
+      <dd>
+        Acceso, rectificación, supresión y demás derechos en {legal.email}. Más información en la <a href="/privacidad/">política de privacidad</a>.
+      </dd>
+    </div>
+  </dl>
+
+  <input type="hidden" name="source" value={id} />
+
+  <div class="cta-form__actions">
+    <Button type="submit" size="lg" data-submit>
+      <span data-submit-label>{submitLabel}</span>
+    </Button>
+  </div>
+
+  <p class="cta-form__status" role="status" aria-live="polite" data-status></p>
+</form>
+
+<style>
+  .cta-form {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .cta-form__note {
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+  .cta-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+  .field {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+  .field--full {
+    grid-column: 1 / -1;
+  }
+  label {
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+  .field__optional {
+    font-weight: 400;
+    color: var(--c-ink-soft);
+  }
+  input:not([type='checkbox']),
+  textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.7rem 0.9rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-ink-soft);
+    border-radius: var(--radius);
+    font-size: 1rem; /* evita el zoom de iOS al enfocar */
+    transition: border-color var(--dur-fast) ease;
+  }
+  textarea {
+    resize: vertical;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--c-ink-soft);
+    opacity: 1;
+  }
+  input:hover,
+  textarea:hover {
+    border-color: var(--c-ink);
+  }
+  input:focus-visible,
+  textarea:focus-visible {
+    outline-offset: 0;
+    border-color: var(--c-accent);
+  }
+  [aria-invalid='true'] {
+    border-color: #a33a2a !important;
+  }
+  .field__error {
+    min-height: 0;
+    font-size: var(--fs-small);
+    color: #a33a2a; /* 5.59:1 sobre crema, 6.10:1 sobre hueso */
+  }
+  .field__error:empty {
+    display: none;
+  }
+
+  .field--check {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    column-gap: var(--space-xs);
+  }
+  .field--check input {
+    width: 22px;
+    height: 22px;
+    margin-top: 0.15rem;
+    accent-color: var(--c-accent);
+  }
+  .field--check label {
+    font-weight: 400;
+    font-size: var(--fs-body);
+  }
+  .field--check .field__error {
+    grid-column: 2;
+  }
+
+  .cta-form__rgpd {
+    display: grid;
+    gap: var(--space-3xs);
+    padding: var(--space-s) var(--space-m);
+    border: var(--line);
+    border-radius: var(--radius);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--c-ink-soft);
+  }
+  .cta-form__rgpd div {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: var(--space-xs);
+  }
+  .cta-form__rgpd dt {
+    font-weight: 500;
+    color: var(--c-ink);
+  }
+  @media (max-width: 479.98px) {
+    .cta-form__rgpd div {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  .cta-form__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .cta-form__actions :global(.btn) {
+    width: 100%;
+  }
+  .cta-form__actions :global(.btn[aria-busy='true']) {
+    cursor: progress;
+    opacity: 0.75;
+  }
+  .cta-form__status {
+    font-weight: 500;
+  }
+  .cta-form__status:empty {
+    display: none;
+  }
+  .cta-form__status[data-state='success'] {
+    padding: var(--space-s) var(--space-m);
+    background: var(--c-surface);
+    border-left: 2px solid var(--c-brass);
+  }
+  .cta-form__status[data-state='error'] {
+    color: #a33a2a;
+  }
+
+  @media (max-width: 599.98px) {
+    .cta-form__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { initForms } from '@/lib/form';
+  document.addEventListener('astro:page-load', initForms);
+</script>

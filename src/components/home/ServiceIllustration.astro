@@ -1,0 +1,94 @@
+---
+/** Ilustraciones de línea (tinta + latón) para las tarjetas de servicio. Decorativas. */
+import type { ServiceIllustration } from '@/data/services';
+
+interface Props {
+  name: ServiceIllustration;
+}
+const { name } = Astro.props;
+const stamps = Array.from({ length: 10 }, (_, i) => i);
+---
+
+<svg class="illus" viewBox="0 0 240 160" fill="none" aria-hidden="true" focusable="false">
+  {
+    name === 'social' && (
+      <g>
+        <rect x="62" y="48" width="116" height="80" rx="6" />
+        <path d="M92 48l8-14h40l8 14" />
+        <circle cx="120" cy="88" r="24" />
+        <circle cx="120" cy="88" r="13" class="accent" />
+        <circle cx="160" cy="62" r="3" class="fill" />
+        <path class="accent" d="M196 46c-4-7-14-5-14 3 0 7 14 15 14 15s14-8 14-15c0-8-10-10-14-3z" />
+        <path d="M30 120h18M30 128h12" />
+      </g>
+    )
+  }
+  {
+    name === 'phone' && (
+      <g>
+        <rect x="92" y="22" width="56" height="116" rx="10" />
+        <path d="M112 30h16" />
+        <circle cx="120" cy="126" r="4" />
+        <path class="accent" d="M164 62c8 8 8 28 0 36M176 52c14 14 14 42 0 56M188 42c20 20 20 56 0 76" />
+        <path d="M104 64h32M104 74h24M104 84h28" />
+        <text x="44" y="86" class="label">24/7</text>
+      </g>
+    )
+  }
+  {
+    name === 'calendar' && (
+      <g>
+        <rect x="56" y="30" width="128" height="104" rx="4" />
+        <path d="M56 54h128M84 22v16M156 22v16" />
+        {[0, 1, 2, 3].map((r) =>
+          [0, 1, 2, 3, 4].map((c) => (
+            <rect x={68 + c * 22} y={62 + r * 17} width="14" height="10" rx="1" class={r === 2 && c === 3 ? 'accent' : 'soft'} />
+          ))
+        )}
+        <path class="accent" d="M136 97l4 4 8-9" />
+      </g>
+    )
+  }
+  {
+    name === 'wallet' && (
+      <g>
+        <rect x="40" y="34" width="160" height="96" rx="10" />
+        <path d="M40 58h160" />
+        <path d="M56 46h40" />
+        {stamps.map((i) => (
+          <circle cx={66 + (i % 5) * 27} cy={i < 5 ? 80 : 108} r="9" class={i < 7 ? 'accent' : 'soft'} />
+        ))}
+        <path class="accent" d="M175 104h10v6a5 5 0 01-10 0zM185 106h3a2 2 0 010 4h-3" />
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .illus {
+    width: 100%;
+    height: 100%;
+    stroke: var(--c-ink);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .accent {
+    stroke: var(--c-brass);
+  }
+  .soft {
+    stroke: var(--c-stone);
+  }
+  .fill {
+    fill: var(--c-ink);
+    stroke: none;
+  }
+  .label {
+    fill: var(--c-ink);
+    stroke: none;
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+</style>

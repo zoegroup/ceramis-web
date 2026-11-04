@@ -1,13 +1,8 @@
 ---
 import { legalNav, nav, site, whatsappHref } from '@/data/site';
+import { serviceHref, services } from '@/data/services';
 
 const year = new Date().getFullYear();
-const services = [
-  { label: 'Gestión de redes sociales', href: '/servicios/gestion-redes-sociales/' },
-  { label: 'Reservas telefónicas con IA', href: '/servicios/reservas-telefonicas-ia/' },
-  { label: 'Reservas web', href: '/servicios/reservas-web/' },
-  { label: 'Fidelización con Wallet', href: '/servicios/fidelizacion-wallet/' },
-];
 ---
 
 <footer class="site-footer">
@@ -22,7 +17,7 @@ const services = [
 
       <nav class="site-footer__col" aria-labelledby="f-servicios">
         <p class="eyebrow" id="f-servicios">Servicios</p>
-        <ul role="list">{services.map((s) => <li><a href={s.href}>{s.label}</a></li>)}</ul>
+        <ul role="list">{services.map((s) => <li><a href={serviceHref(s)}>{s.name}</a></li>)}</ul>
       </nav>
 
       <nav class="site-footer__col" aria-labelledby="f-agencia">

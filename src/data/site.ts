@@ -27,6 +27,15 @@ export const site = {
   ],
 } as const;
 
+/** Datos legales (la SL está en constitución). Se usan en formularios y páginas legales. */
+export const legal = {
+  company: '[RAZÓN SOCIAL]',
+  nif: '[NIF]',
+  address: '[DOMICILIO]',
+  email: '[EMAIL]',
+  registry: '[REGISTRO MERCANTIL]',
+} as const;
+
 export const nav = [
   { label: 'Servicios', href: '/servicios/' },
   { label: 'Sobre nosotros', href: '/sobre-nosotros/' },

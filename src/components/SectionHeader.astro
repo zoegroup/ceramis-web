@@ -1,0 +1,32 @@
+---
+/** Cabecera común de sección: eyebrow + H2 (admite <em> vía slot "title") + entradilla opcional. */
+interface Props {
+  eyebrow?: string;
+  id?: string;
+  align?: 'start' | 'center';
+}
+const { eyebrow, id, align = 'start' } = Astro.props;
+---
+
+<header class:list={['section-header', `section-header--${align}`]} data-reveal>
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <h2 id={id}><slot name="title" /></h2>
+  {Astro.slots.has('default') && <p class="lead"><slot /></p>}
+</header>
+
+<style>
+  .section-header {
+    display: grid;
+    gap: var(--space-s);
+    max-width: 52rem;
+    margin-bottom: var(--space-xl);
+  }
+  .section-header--center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+  .lead {
+    margin-top: var(--space-2xs);
+  }
+</style>

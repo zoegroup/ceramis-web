@@ -8,6 +8,8 @@ interface Props {
 const { transparent = false } = Astro.props;
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+// En la home el formulario de diagnóstico está en la propia página.
+const ctaHref = path === '/' ? '#diagnostico' : primaryCta.href;
 ---
 
 <header class="site-header" data-header data-transparent={transparent ? '' : undefined}>
@@ -32,7 +34,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
 
     <div class="site-header__actions">
       <a class="site-header__client" href={site.dashboardUrl} rel="noopener">Acceso clientes</a>
-      <Button href={primaryCta.href} class="site-header__cta">Diagnóstico gratis</Button>
+      <Button href={ctaHref} class="site-header__cta">Diagnóstico gratis</Button>
       <button
         class="site-header__burger"
         type="button"
@@ -83,7 +85,7 @@ const isCurrent = (href: string) => path === href || (href !== '/' && path.start
       </ul>
     </nav>
     <div class="mobile-menu__bottom container">
-      <Button href={primaryCta.href} size="lg">{primaryCta.label}</Button>
+      <Button href={ctaHref} size="lg">{primaryCta.label}</Button>
       <a class="mobile-menu__client" href={site.dashboardUrl} rel="noopener">Acceso clientes →</a>
     </div>
 </div>

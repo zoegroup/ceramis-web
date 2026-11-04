@@ -1,0 +1,177 @@
+---
+/**
+ * "Cómo trabajamos": pasos con una línea de tiempo que se dibuja con el scroll.
+ * Horizontal desde 1024 px, vertical por debajo. La línea lee `--p` (0–1); sin JS o con
+ * reduced-motion vale 1 y todo se ve completo.
+ */
+import type { Step } from '@/data/home';
+
+interface Props {
+  steps: Step[];
+}
+const { steps } = Astro.props;
+---
+
+<div class="steps" data-steps>
+  <span class="steps__line" aria-hidden="true"><span class="steps__fill"></span></span>
+  <ol class="steps__list" role="list">
+  {
+    steps.map((step, i) => (
+      <li class="steps__item is-on" data-step data-reveal>
+        <span class="steps__dot" aria-hidden="true" />
+        <p class="steps__index">
+          <span class="visually-hidden">Paso </span>
+          {String(i + 1).padStart(2, '0')}
+        </p>
+        <h3 class="h4">{step.title}</h3>
+        <p class="steps__text">{step.text}</p>
+      </li>
+    ))
+  }
+  </ol>
+</div>
+
+<style>
+  .steps {
+    --p: 1;
+    --dot: 13px;
+    position: relative;
+  }
+  .steps__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-l);
+  }
+  .steps__line {
+    position: absolute;
+    top: calc(var(--dot) / 2);
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--c-stone);
+  }
+  .steps__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--c-brass);
+    transform: scaleX(var(--p));
+    transform-origin: left;
+  }
+  .steps__item {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding-top: calc(var(--dot) + var(--space-l));
+  }
+  .steps__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--dot);
+    height: var(--dot);
+    border: 1px solid var(--c-stone);
+    border-radius: 50%;
+    background: var(--c-bg);
+    transition:
+      background-color 0.4s ease,
+      border-color 0.4s ease;
+  }
+  .steps__item.is-on .steps__dot {
+    border-color: var(--c-brass);
+    background: var(--c-brass);
+  }
+  .steps__index {
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--c-accent);
+  }
+  .steps__text {
+    color: var(--c-ink-soft);
+  }
+
+  @media (max-width: 1023.98px) {
+    .steps__list {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+      padding-left: calc(var(--dot) + var(--space-l));
+    }
+    .steps__line {
+      top: 0;
+      bottom: 0;
+      left: calc(var(--dot) / 2);
+      right: auto;
+      width: 1px;
+      height: auto;
+    }
+    .steps__fill {
+      transform: scaleY(var(--p));
+      transform-origin: top;
+    }
+    .steps__item {
+      padding-top: 0;
+    }
+    .steps__dot {
+      top: 0.35em;
+      left: calc(-1 * (var(--dot) + var(--space-l)));
+    }
+  }
+</style>
+
+<script>
+  import { onMotion } from '@/lib/motion';
+
+  onMotion(({ gsap, reducedMotion }) => {
+    const lists = Array.from(document.querySelectorAll<HTMLElement>('[data-steps]'));
+    if (!lists.length || reducedMotion) return;
+
+    const tweens = lists.map((list) => {
+      const line = list.querySelector<HTMLElement>('.steps__line')!;
+      const items = Array.from(list.querySelectorAll<HTMLElement>('[data-step]'));
+      // Umbral de cada punto = su posición a lo largo de la línea (0–1). Se mide en cada refresh.
+      let thresholds: number[] = [];
+      const measure = () => {
+        const l = line.getBoundingClientRect();
+        const vertical = l.height > l.width;
+        thresholds = items.map((item) => {
+          const dot = item.querySelector<HTMLElement>('.steps__dot')!.getBoundingClientRect();
+          const pos = vertical ? dot.top + dot.height / 2 - l.top : dot.left + dot.width / 2 - l.left;
+          return pos / (vertical ? l.height : l.width);
+        });
+      };
+      const paint = (p: number) => items.forEach((item, i) => item.classList.toggle('is-on', p >= (thresholds[i] ?? 0) - 0.001));
+
+      return gsap.fromTo(
+        list,
+        { '--p': 0 },
+        {
+          '--p': 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: list,
+            start: 'top 70%',
+            end: 'bottom 55%',
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+            onRefresh: () => {
+              measure();
+              paint(Number(gsap.getProperty(list, '--p')));
+            },
+          },
+          onUpdate() {
+            paint(Number(gsap.getProperty(list, '--p')));
+          },
+        }
+      );
+    });
+
+    return () => {
+      tweens.forEach((t) => t.kill());
+      lists.forEach((list) => {
+        gsap.set(list, { clearProps: '--p' });
+        list.querySelectorAll('[data-step]').forEach((el) => el.classList.add('is-on'));
+      });
+    };
+  });
+</script>

@@ -1,0 +1,127 @@
+---
+import ServiceIllustration from '@/components/home/ServiceIllustration.astro';
+import { serviceHref, waitlistHref, type Service } from '@/data/services';
+
+interface Props {
+  service: Service;
+  index: number;
+}
+const { service, index } = Astro.props;
+const href = service.available ? serviceHref(service) : waitlistHref(service);
+const linkLabel = service.available ? 'Ver detalle' : 'Únete a la lista de espera';
+const titleId = `servicio-${service.slug}`;
+---
+
+<article class="service-card" aria-labelledby={titleId} data-reveal>
+  <div class="service-card__media">
+    <ServiceIllustration name={service.illustration} />
+  </div>
+  <div class="service-card__body">
+    <p class="service-card__meta">
+      <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+      {!service.available && <span class="service-card__badge">Próximamente</span>}
+    </p>
+    <h3 class="h3" id={titleId}>{service.name}</h3>
+    <p class="service-card__benefit">{service.benefit}</p>
+    <a class="service-card__link" href={href}>
+      {linkLabel}<span class="visually-hidden">: {service.name}</span> <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</article>
+
+<style>
+  .service-card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100%;
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  /* Línea de latón que se dibuja en hover/foco */
+  .service-card::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 2px;
+    background: var(--c-brass);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.8s var(--ease-out);
+  }
+  .service-card:hover::after,
+  .service-card:focus-within::after {
+    transform: scaleX(1);
+  }
+
+  .service-card__media {
+    aspect-ratio: 2 / 1;
+    padding: var(--space-m) var(--space-l);
+    border-bottom: var(--line);
+    overflow: hidden;
+  }
+  .service-card__media :global(svg) {
+    transition: transform 0.8s var(--ease-out);
+  }
+  .service-card:hover .service-card__media :global(svg),
+  .service-card:focus-within .service-card__media :global(svg) {
+    transform: scale(1.03);
+  }
+
+  .service-card__body {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-xs);
+    padding: var(--space-l);
+  }
+  .service-card__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--c-ink-soft);
+  }
+  .service-card__badge {
+    padding: 0.2em 0.7em;
+    border: 1px solid var(--c-accent);
+    border-radius: var(--radius);
+    color: var(--c-accent);
+    text-transform: uppercase;
+  }
+  .service-card__benefit {
+    color: var(--c-ink-soft);
+  }
+  .service-card__link {
+    justify-self: start;
+    margin-top: var(--space-s);
+    padding-block: 0.6rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--c-accent);
+  }
+  .service-card__link span {
+    display: inline-block;
+    transition: transform var(--dur-fast) ease;
+  }
+  .service-card:hover .service-card__link span {
+    transform: translateX(4px);
+  }
+  /* Toda la tarjeta es clicable, con un único enlace accesible */
+  .service-card__link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .service-card__link:focus-visible {
+    outline: none;
+  }
+  .service-card:has(.service-card__link:focus-visible) {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 3px;
+  }
+</style>

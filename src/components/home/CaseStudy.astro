@@ -1,0 +1,91 @@
+---
+/** Caso real. Solo se renderiza si `showCase` está activo en src/data/home.ts. */
+import SectionHeader from '@/components/SectionHeader.astro';
+import { caseStudy, showCase } from '@/data/home';
+---
+
+{
+  showCase && (
+    <section class="case" aria-labelledby="caso-titulo">
+      <div class="container">
+        <SectionHeader eyebrow={`Caso real · ${caseStudy.place}`} id="caso-titulo">
+          <Fragment slot="title">
+            {caseStudy.client}: resultados que se <em>notan</em>.
+          </Fragment>
+          {caseStudy.summary}
+        </SectionHeader>
+
+        <div class="case__body">
+          <dl class="case__metrics">
+            {caseStudy.metrics.map((m) => (
+              <div class="case__metric" data-reveal>
+                <dt>{m.label}</dt>
+                <dd>{m.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <figure class="case__quote" data-reveal>
+            <blockquote>
+              <p>“{caseStudy.quote}”</p>
+            </blockquote>
+            <figcaption>{caseStudy.author}</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .case {
+    padding-block: var(--space-3xl);
+  }
+  .case__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .case__metrics {
+    display: grid;
+    border-top: var(--line);
+  }
+  .case__metric {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-3xs);
+    padding-block: var(--space-m);
+    border-bottom: var(--line);
+  }
+  .case__metric dd {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--c-accent);
+  }
+  .case__metric dt {
+    color: var(--c-ink-soft);
+  }
+  .case__quote {
+    padding: var(--space-xl);
+    background: var(--c-surface);
+    border: var(--line);
+    border-left: 2px solid var(--c-brass);
+  }
+  .case__quote p {
+    font-size: var(--fs-h4);
+    line-height: 1.45;
+  }
+  .case__quote figcaption {
+    margin-top: var(--space-m);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--c-ink-soft);
+  }
+  @media (max-width: 899.98px) {
+    .case__body {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+  }
+</style>

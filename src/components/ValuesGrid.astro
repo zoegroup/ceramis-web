@@ -1,0 +1,272 @@
+---
+/**
+ * Valores CERAMIS sobre la rejilla 3×3 del logo.
+ * - Animado (≥768 px, alto suficiente, con movimiento): pin de ~200vh; cada letra se ilumina
+ *   en secuencia y a la derecha aparecen sus dos palabras y su frase.
+ * - Estático (móvil, reduced-motion o sin JS): rejilla fija (sticky) + lista vertical con reveal.
+ */
+import SectionHeader from '@/components/SectionHeader.astro';
+import { values, valuesGridLayout } from '@/data/values';
+
+const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
+---
+
+<section class="values" aria-labelledby="valores-titulo" data-values>
+  <div class="values__inner container">
+    <SectionHeader eyebrow="Valores CERAMIS" id="valores-titulo">
+      <Fragment slot="title">Siete letras. <em>Catorce</em> palabras.</Fragment>
+      CERAMIS no es un nombre al azar. Cada letra es una forma de trabajar contigo.
+    </SectionHeader>
+
+    <div class="values__stage">
+      <div class="values__grid" aria-hidden="true">
+        {
+          valuesGridLayout.map((cell) => {
+            const i = indexOf(cell);
+            return i >= 0 ? (
+              <span class="values__cell" data-cell={i}>
+                {cell}
+              </span>
+            ) : (
+              <span class:list={['values__cell', 'values__cell--word', `values__cell--${cell.toLowerCase()}`]}>
+                {cell}
+              </span>
+            );
+          })
+        }
+      </div>
+
+      <ol class="values__list" role="list">
+        {
+          values.map((v, i) => (
+            <li class="values__item" data-value={i}>
+              <p class="values__letter" aria-hidden="true">
+                <span>{v.letter}</span>
+                <span class="values__count">
+                  {String(i + 1).padStart(2, '0')} / {String(values.length).padStart(2, '0')}
+                </span>
+              </p>
+              <h3 class="values__words">
+                <span class="visually-hidden">{v.letter}: </span>
+                {v.words[0]} <span class="values__dot" aria-hidden="true">·</span> <em>{v.words[1]}</em>
+              </h3>
+              <p class="values__text">{v.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .values {
+    padding-block: var(--space-3xl);
+  }
+
+  /* --- Estático (por defecto) --- */
+  .values__stage {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+  .values__grid {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-l));
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    aspect-ratio: 1;
+    padding: 6%;
+    border: 2px solid var(--c-ink);
+    container-type: inline-size;
+  }
+  .values__cell {
+    display: grid;
+    place-items: center;
+    font-size: 20cqi;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--c-ink);
+    transition: color 0.4s ease;
+  }
+  .values__cell--word {
+    font-size: 5.5cqi;
+    letter-spacing: 0.04em;
+    color: var(--c-ink-soft);
+  }
+  .values__cell--agency {
+    font-family: var(--font-accent);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 7cqi;
+    letter-spacing: 0;
+  }
+
+  .values__list {
+    display: grid;
+  }
+  .values__item {
+    display: grid;
+    gap: var(--space-xs);
+    padding-block: var(--space-l);
+    border-top: var(--line);
+  }
+  .values__item:last-child {
+    border-bottom: var(--line);
+  }
+  .values__letter {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    line-height: 1;
+    color: var(--c-accent);
+  }
+  .values__count {
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--tracking-wide);
+    color: var(--c-ink-soft);
+  }
+  .values__words {
+    font-size: var(--fs-h3);
+  }
+  .values__dot {
+    color: var(--c-brass);
+  }
+  .values__text {
+    color: var(--c-ink-soft);
+  }
+
+  @media (max-width: 767.98px) {
+    .values__stage {
+      grid-template-columns: 1fr;
+      gap: var(--space-xl);
+    }
+    .values__grid {
+      position: static;
+      width: min(100%, 22rem);
+    }
+  }
+
+  /* --- Animado (clase puesta por el script mientras el pin está activo) --- */
+  .values.is-pinned {
+    padding-block: 0;
+  }
+  .values.is-pinned .values__inner {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    height: 100svh;
+    padding-top: calc(var(--header-h) + var(--space-l));
+    padding-bottom: var(--space-xl);
+  }
+  .values.is-pinned :global(.section-header) {
+    margin-bottom: var(--space-l);
+  }
+  .values.is-pinned .values__stage {
+    min-height: 0;
+    align-items: center;
+  }
+  .values.is-pinned .values__grid {
+    position: static;
+    /* Cuadrado que cabe en el alto que deja la cabecera de la sección */
+    width: min(100%, 100svh - var(--header-h) - var(--values-head, 15rem));
+    justify-self: start;
+  }
+  .values.is-pinned .values__cell[data-cell] {
+    color: var(--c-stone);
+  }
+  .values.is-pinned .values__cell.is-active {
+    color: var(--c-ink);
+  }
+  .values.is-pinned .values__cell.is-done {
+    color: var(--c-accent);
+  }
+  .values.is-pinned .values__list {
+    grid-template-areas: 'stack';
+  }
+  .values.is-pinned .values__item {
+    grid-area: stack;
+    border-bottom: var(--line);
+  }
+  .values.is-pinned .values__letter > span:first-child {
+    font-size: clamp(4rem, 9vw, 8rem);
+  }
+  .values.is-pinned .values__words {
+    font-size: var(--fs-h2);
+  }
+
+  @media (max-width: 1023.98px) {
+    .values.is-pinned .values__stage {
+      grid-template-columns: 1fr;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: var(--space-l);
+    }
+    .values.is-pinned .values__grid {
+      --values-head: 30rem;
+      justify-self: center;
+    }
+    .values.is-pinned .values__letter > span:first-child {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { onMotion } from '@/lib/motion';
+  import { revealOnScroll } from '@/lib/reveal';
+
+  onMotion((ctx) => {
+    const { gsap, reducedMotion } = ctx;
+    const section = document.querySelector<HTMLElement>('[data-values]');
+    if (!section || reducedMotion) return;
+    const cells = Array.from(section.querySelectorAll<HTMLElement>('[data-cell]'));
+    const items = Array.from(section.querySelectorAll<HTMLElement>('[data-value]'));
+    const n = items.length;
+    const pinQuery = '(min-width: 768px) and (min-height: 600px)';
+
+    const mm = gsap.matchMedia();
+    // Sin pin: lista vertical con reveal.
+    mm.add(`not all and ${pinQuery}`, () => revealOnScroll(ctx, items));
+    mm.add(pinQuery, () => {
+      section.classList.add('is-pinned');
+      gsap.set(items.slice(1), { autoAlpha: 0, y: 24 });
+
+      const setActive = (active: number) => {
+        cells.forEach((c, i) => {
+          c.classList.toggle('is-active', i === active);
+          c.classList.toggle('is-done', i < active);
+        });
+      };
+      setActive(0);
+
+      const tl = gsap.timeline({
+        defaults: { duration: 0.35, ease: 'power3.out' },
+        scrollTrigger: {
+          trigger: section,
+          start: 'top top',
+          end: () => `+=${window.innerHeight * 2}`,
+          pin: true,
+          scrub: 0.5,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => setActive(Math.min(n - 1, Math.floor(self.progress * n))),
+        },
+      });
+      // Una unidad de tiempo por valor; el cambio ocurre al final de cada tramo.
+      for (let i = 1; i < n; i++) {
+        tl.to(items[i - 1]!, { autoAlpha: 0, y: -24 }, i - 0.35).to(items[i]!, { autoAlpha: 1, y: 0 }, i - 0.1);
+      }
+      tl.to({}, { duration: 0.6 }, n - 0.6);
+
+      return () => {
+        section.classList.remove('is-pinned');
+        cells.forEach((c) => c.classList.remove('is-active', 'is-done'));
+        gsap.set(items, { clearProps: 'opacity,visibility,transform' });
+      };
+    });
+
+    return () => mm.revert();
+  });
+</script>
