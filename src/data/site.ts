@@ -30,6 +30,12 @@ export const site = {
   ],
 } as const;
 
+/** @id de los nodos globales de schema.org (ver SchemaOrg.astro). */
+export const schemaIds = {
+  organization: 'https://ceramisagency.com/#organization',
+  website: 'https://ceramisagency.com/#website',
+} as const;
+
 /** Datos legales (la SL está en constitución). Se usan en formularios y páginas legales. */
 export const legal = {
   company: '[RAZÓN SOCIAL]',

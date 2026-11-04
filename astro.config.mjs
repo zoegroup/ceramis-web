@@ -24,7 +24,14 @@ export default defineConfig({
   site: 'https://ceramisagency.com',
   output: 'static',
   trailingSlash: 'always',
-  build: { format: 'directory' },
+  // CSS siempre inline: cero hojas bloqueantes (la CSP permite estilos inline).
+  build: { format: 'directory', inlineStylesheets: 'always' },
+  // Preparado para EN/DE más adelante: el español va sin prefijo (/servicios/, no /es/servicios/).
+  i18n: {
+    locales: ['es'],
+    defaultLocale: 'es',
+    routing: { prefixDefaultLocale: false },
+  },
   integrations: [
     mdx(),
     // Las legales llevan noindex: fuera del sitemap.
@@ -32,6 +39,9 @@ export default defineConfig({
     formEndpointWarning,
   ],
   devToolbar: { enabled: false },
+  // Ningún script de módulo inline: así <ClientRouter /> no necesita inyectar un script `data:`
+  // y la CSP puede ser estricta (ver scripts/postbuild.mjs).
+  vite: { build: { assetsInlineLimit: 0 } },
   env: {
     schema: {
       PUBLIC_DASHBOARD_URL: envField.string({

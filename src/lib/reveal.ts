@@ -5,6 +5,7 @@
  * - Sin JS o con reduced-motion no se oculta nada.
  * - Solo opacidad (no visibility): lo oculto sigue siendo enfocable con el teclado,
  *   y al recibir foco se muestra al instante.
+ * - Lo que llega a la vista con el foco dentro no se anima.
  */
 import { onMotion, type MotionContext } from '@/lib/motion';
 
@@ -14,11 +15,15 @@ export function revealOnScroll({ gsap, ScrollTrigger }: MotionContext, elements:
   if (!targets.length) return () => {};
 
   gsap.set(targets, { opacity: 0, y: 24 });
+  const shown = new Set<Element>();
   const triggers = ScrollTrigger.batch(targets, {
     start: 'top 88%',
     once: true,
-    onEnter: (batch) =>
-      gsap.to(batch, {
+    onEnter: (batch) => {
+      const pending = batch.filter((el) => !shown.has(el) && !el.contains(document.activeElement));
+      pending.forEach((el) => shown.add(el));
+      if (!pending.length) return;
+      gsap.to(pending, {
         opacity: 1,
         y: 0,
         duration: 0.9,
@@ -26,11 +31,18 @@ export function revealOnScroll({ gsap, ScrollTrigger }: MotionContext, elements:
         stagger: 0.12,
         overwrite: true,
         clearProps: 'transform',
-      }),
+      });
+    },
   });
+  // Con teclado, el bloque enfocado aparece al instante y ya no se anima (base.css lo garantiza
+  // además con [data-reveal]:focus-within mientras tenga el foco).
   const onFocus = (e: FocusEvent) => {
-    const el = (e.target as HTMLElement).closest<HTMLElement>('[data-reveal]');
-    if (el && targets.includes(el)) gsap.to(el, { opacity: 1, y: 0, duration: 0.3, overwrite: true });
+    for (let el = (e.target as HTMLElement).closest<HTMLElement>('[data-reveal]'); el; el = el.parentElement?.closest<HTMLElement>('[data-reveal]') ?? null) {
+      if (!targets.includes(el)) continue;
+      shown.add(el);
+      gsap.killTweensOf(el);
+      gsap.set(el, { opacity: 1, clearProps: 'transform' });
+    }
   };
   document.addEventListener('focusin', onFocus);
 

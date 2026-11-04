@@ -1,0 +1,66 @@
+---
+/**
+ * Schema global (CLAUDE.md §9): Organization + ProfessionalService en un único @graph,
+ * más WebSite en la home. Los schemas de cada página enlazan con `orgId`.
+ * `sameAs` se omite mientras las redes sean placeholders.
+ */
+import { legal, schemaIds, site } from '@/data/site';
+
+const orgId = schemaIds.organization;
+const websiteId = schemaIds.website;
+
+const isHome = Astro.url.pathname === '/';
+const isPlaceholder = (v: string) => v.includes('[');
+const sameAs = site.social.map((s) => s.href).filter((href) => !isPlaceholder(href));
+
+const graph: Record<string, unknown>[] = [
+  {
+    '@type': ['Organization', 'ProfessionalService'],
+    '@id': orgId,
+    name: site.name,
+    alternateName: site.shortName,
+    url: site.url,
+    logo: { '@type': 'ImageObject', url: `${site.url}/icon-512.png`, width: 512, height: 512 },
+    image: `${site.url}${site.ogImage}`,
+    description: site.defaultDescription,
+    email: site.contact.email,
+    telephone: site.contact.phone,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: legal.address,
+      addressLocality: 'Palma',
+      addressRegion: site.contact.region,
+      addressCountry: 'ES',
+    },
+    areaServed: [
+      { '@type': 'City', name: 'Palma' },
+      { '@type': 'AdministrativeArea', name: 'Mallorca' },
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      email: site.contact.email,
+      telephone: site.contact.phone,
+      areaServed: 'ES',
+      availableLanguage: ['es'],
+    },
+    knowsAbout: ['Marketing para restaurantes', 'Gestión de redes sociales', 'Reservas para restaurantes', 'Fidelización de clientes'],
+    ...(sameAs.length ? { sameAs } : {}),
+  },
+];
+
+if (isHome) {
+  graph.push({
+    '@type': 'WebSite',
+    '@id': websiteId,
+    name: site.name,
+    url: `${site.url}/`,
+    inLanguage: 'es-ES',
+    publisher: { '@id': orgId },
+  });
+}
+
+const schema = { '@context': 'https://schema.org', '@graph': graph };
+---
+
+<script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />

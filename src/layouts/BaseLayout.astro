@@ -12,6 +12,7 @@ import '@/styles/tokens.css';
 import '@/styles/base.css';
 import '@/styles/typography.css';
 import SEO, { type Props as SEOProps } from '@/components/SEO.astro';
+import SchemaOrg from '@/components/SchemaOrg.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import { site } from '@/data/site';
@@ -49,6 +50,7 @@ const { transparentHeader = false, ...seo } = Astro.props;
     <link rel="preload" href={jost500} as="font" type="font/woff2" crossorigin />
     <slot name="head" />
     <SEO {...seo} />
+    <SchemaOrg />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

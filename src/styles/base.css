@@ -14,6 +14,8 @@ html {
   text-size-adjust: 100%;
   color-scheme: light;
   background: var(--c-bg);
+  /* Al navegar con teclado o anclas, lo enfocado no queda bajo el header fijo */
+  scroll-padding-top: calc(var(--header-h) + var(--space-s));
 }
 
 body {
@@ -146,4 +148,11 @@ html.lenis body {
 
 main:focus {
   outline: none;
+}
+
+/* Reveal (lib/reveal.ts): lo que tiene el foco del teclado siempre se ve, aunque su animación
+   no haya terminado. !important porque GSAP escribe estilos en línea. */
+[data-reveal]:focus-within {
+  opacity: 1 !important;
+  transform: none !important;
 }

@@ -16,7 +16,7 @@ import RoiCalculator from '@/components/RoiCalculator.astro';
 import CtaSection from '@/components/CtaSection.astro';
 import ServiceCard from '@/components/ServiceCard.astro';
 import { serviceHref, services, type Service } from '@/data/services';
-import { site } from '@/data/site';
+import { schemaIds, site } from '@/data/site';
 import { plain } from '@/lib/text';
 
 interface Props {
@@ -33,7 +33,7 @@ const schema = {
   serviceType: service.name,
   description: service.metaDescription,
   url: new URL(serviceHref(service), base).href,
-  provider: { '@type': 'ProfessionalService', name: site.name, url: site.url },
+  provider: { '@id': schemaIds.organization },
   areaServed: [
     { '@type': 'City', name: 'Palma' },
     { '@type': 'AdministrativeArea', name: 'Mallorca' },

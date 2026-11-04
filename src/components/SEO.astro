@@ -24,6 +24,15 @@ const imageUrl = new URL(image, Astro.site ?? site.url).href;
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{
+  /* i18n preparado: hoy solo ES. Al añadir EN/DE se añade aquí un alternate por idioma. */
+  !noindex && (
+    <>
+      <link rel="alternate" hreflang="es" href={canonical} />
+      <link rel="alternate" hreflang="x-default" href={canonical} />
+    </>
+  )
+}
 {noindex && <meta name="robots" content="noindex, follow" />}
 
 <meta property="og:type" content={type} />

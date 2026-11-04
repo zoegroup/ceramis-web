@@ -30,7 +30,8 @@ import { steps } from '@/data/home';
     </div>
   </section>
 
-  <section class="svc-index-list" aria-label="Lista de servicios">
+  <section class="svc-index-list" aria-labelledby="lista-servicios">
+    <h2 id="lista-servicios" class="visually-hidden">Nuestros servicios</h2>
     <ul class="svc-index-grid container" role="list">
       {
         services.map((service, i) => (

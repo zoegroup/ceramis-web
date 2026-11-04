@@ -1,5 +1,5 @@
 ---
-import { Image, getImage } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import Button from '@/components/Button.astro';
@@ -9,7 +9,7 @@ import CtaSection from '@/components/CtaSection.astro';
 import PostCard from '@/components/blog/PostCard.astro';
 import { formatDate, postHref, readingTime, relatedPosts, tagSlug, type Post } from '@/lib/blog';
 import { serviceHref, services } from '@/data/services';
-import { site } from '@/data/site';
+import { schemaIds, site } from '@/data/site';
 import '@/styles/prose.css';
 
 interface Props {
@@ -34,11 +34,7 @@ const schema = {
   datePublished: date.toISOString(),
   dateModified: (updated ?? date).toISOString(),
   author: { '@type': 'Organization', name: author, url: site.url },
-  publisher: {
-    '@type': 'Organization',
-    name: site.name,
-    logo: { '@type': 'ImageObject', url: new URL('/icon-512.png', base).href },
-  },
+  publisher: { '@id': schemaIds.organization },
   mainEntityOfPage: url,
   inLanguage: 'es-ES',
   keywords: tags.join(', '),
@@ -78,7 +74,8 @@ const schema = {
     </header>
 
     <div class="post__cover container">
-      <Image
+      <Picture
+        formats={['avif', 'webp']}
         src={cover}
         alt={coverAlt}
         widths={[480, 800, 1200, 1600]}

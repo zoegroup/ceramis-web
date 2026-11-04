@@ -90,7 +90,7 @@ import { nameStory, team, whyHospitality } from '@/data/about';
                 {m.photo ? (
                   <Image src={m.photo} alt={`Foto de ${m.name}`} widths={[320, 640]} sizes="(min-width: 900px) 30vw, 100vw" />
                 ) : (
-                  <LogoGrid />
+                  <img class="about-member__placeholder" src="/brand/ceramis-logo-tinta.svg" alt="" width="160" height="160" loading="lazy" />
                 )}
               </div>
               <h3 class="h4">{m.name}</h3>
@@ -235,16 +235,17 @@ import { nameStory, team, whyHospitality } from '@/data/about';
     border-radius: var(--radius);
     overflow: hidden;
   }
-  .about-member__photo :global(.logo-grid) {
+  .about-member__placeholder {
     width: 100%;
-    opacity: 0.35;
+    height: auto;
+    opacity: 0.3;
   }
-  .about-member__photo :global(img) {
+  .about-member__photo :global(img:not(.about-member__placeholder)) {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
-  .about-member__photo:has(img) {
+  .about-member__photo:has(img:not(.about-member__placeholder)) {
     padding: 0;
   }
   .about-member__role {

@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import { formatDate, postHref, readingTime, type Post } from '@/lib/blog';
 
 interface Props {
@@ -13,7 +13,8 @@ const { title, description, date, tags, cover, coverAlt } = post.data;
 
 <article class:list={['post-card', featured && 'post-card--featured']} data-reveal>
   <div class="post-card__media">
-    <Image
+    <Picture
+      formats={['avif', 'webp']}
       src={cover}
       alt={coverAlt}
       widths={featured ? [480, 800, 1200] : [400, 640, 800]}

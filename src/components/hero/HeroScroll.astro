@@ -7,11 +7,21 @@
  * - Animado lateral (≥768px en horizontal): canvas a pantalla completa, textos a la izquierda.
  * - Animado apilado (<768px o vertical): bloque de imagen en medio, textos arriba y abajo.
  */
+import { readFileSync } from 'node:fs';
 import Button from '@/components/Button.astro';
 import { primaryCta } from '@/data/site';
+
+// El número de frames sale del manifest que genera scripts/build-hero-frames.sh.
+const manifest = JSON.parse(readFileSync('public/hero/manifest.json', 'utf8')) as { frames: number; pattern: string };
 ---
 
-<section class="hero" data-hero aria-labelledby="hero-title">
+<section
+  class="hero"
+  data-hero
+  data-frames={manifest.frames}
+  data-pattern={manifest.pattern}
+  aria-labelledby="hero-title"
+>
   <div class="hero__pin" data-hero-pin>
     <div class="hero__stage container">
       <div class="hero__media" data-hero-media>
@@ -88,6 +98,12 @@ import { primaryCta } from '@/data/site';
 </section>
 
 <style>
+  /* El timeline oculta los pasos con autoAlpha (visibility: hidden). El H1 se mantiene "visible"
+     para que siga en el árbol de accesibilidad: la opacidad del paso lo oculta igualmente a la vista
+     y no es enfocable. */
+  .hero h1 {
+    visibility: visible;
+  }
   /* ---------- Común ---------- */
   .hero {
     position: relative;
@@ -407,7 +423,6 @@ import { primaryCta } from '@/data/site';
 
 <script>
   import { onMotion } from '@/lib/motion';
-  import manifest from '../../../public/hero/manifest.json';
   import { FrameSequence, HeroRenderer } from './hero-sequence';
 
   const STACKED = '(max-width: 767.98px), (orientation: portrait)';
@@ -423,16 +438,17 @@ import { primaryCta } from '@/data/site';
   ];
   const FADE = 0.03;
 
-  const sequence = new FrameSequence('/hero/', manifest.frames, manifest.pattern);
+  let sequence: FrameSequence | null = null;
 
   onMotion(({ gsap, reducedMotion }) => {
     const section = document.querySelector<HTMLElement>('[data-hero]');
     if (!section || reducedMotion) return;
+    const seq = (sequence ??= new FrameSequence('/hero/', Number(section.dataset.frames), section.dataset.pattern ?? 'f_%04d.webp'));
     const pin = section.querySelector<HTMLElement>('[data-hero-pin]')!;
     const canvas = section.querySelector<HTMLCanvasElement>('[data-hero-canvas]')!;
     const bar = section.querySelector<HTMLElement>('[data-hero-bar]');
 
-    const renderer = new HeroRenderer(canvas, sequence);
+    const renderer = new HeroRenderer(canvas, seq);
     renderer.resize();
 
     const playhead = { frame: 0 };
@@ -452,7 +468,7 @@ import { primaryCta } from '@/data/site';
       },
     });
 
-    tl.to(playhead, { frame: sequence.count - 1, duration: 1, onUpdate: () => renderer.render(playhead.frame) }, 0);
+    tl.to(playhead, { frame: seq.count - 1, duration: 1, onUpdate: () => renderer.render(playhead.frame) }, 0);
     if (bar) tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 1 }, 0);
 
     for (const { step, in: tIn, out: tOut } of STEPS) {
