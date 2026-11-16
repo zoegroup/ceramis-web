@@ -1,8 +1,9 @@
 ---
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import Button from '@/components/Button.astro';
-import ServiceIllustration from '@/components/home/ServiceIllustration.astro';
-import { serviceHref, waitlistHref, type Service } from '@/data/services';
+import { Picture } from 'astro:assets';
+import CtaNote from '@/components/CtaNote.astro';
+import { euros, serviceHref, waitlistHref, type Service } from '@/data/services';
 import { emphasize } from '@/lib/text';
 
 interface Props {
@@ -29,11 +30,14 @@ const { service } = Astro.props;
       </p>
       <h1 set:html={emphasize(service.h1)} />
       <p class="lead">{service.intro}</p>
+      <p class="service-hero__price">
+        <span>Desde</span> <strong data-count={service.fromPrice}>{euros(service.fromPrice)}</strong><span>/mes · sin IVA</span>
+      </p>
       <div class="service-hero__actions">
         {
           service.available ? (
             <Button href="#diagnostico" size="lg">
-              Pide tu diagnóstico gratis
+              {service.cta}
             </Button>
           ) : (
             <Button href={waitlistHref(service)} size="lg">
@@ -41,11 +45,21 @@ const { service } = Astro.props;
             </Button>
           )
         }
-        <Button href="#como-funciona" variant="secondary" size="lg">Cómo funciona</Button>
+        <Button href="#precios" variant="secondary" size="lg">Ver precios</Button>
       </div>
+      <CtaNote />
     </div>
-    <div class="service-hero__media" transition:name={`servicio-media-${service.slug}`}>
-      <ServiceIllustration name={service.illustration} />
+    <div class="service-hero__media" transition:name={`servicio-media-${service.slug}`} data-parallax>
+      <Picture
+        src={service.image}
+        alt={service.imageAlt}
+        formats={['avif', 'webp']}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 900px) 40vw, 100vw"
+        loading="eager"
+        fetchpriority="high"
+        style={service.imagePosition ? `object-position: ${service.imagePosition}` : undefined}
+      />
     </div>
   </div>
 </section>
@@ -84,14 +98,34 @@ const { service } = Astro.props;
     gap: var(--space-s);
     margin-top: var(--space-s);
   }
+  .service-hero__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    color: var(--c-ink-soft);
+  }
+  .service-hero__price strong {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    color: var(--c-accent);
+    font-variant-numeric: tabular-nums;
+  }
   .service-hero__media {
-    aspect-ratio: 1;
-    padding: var(--space-xl);
-    background: var(--c-surface);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--c-sand);
     border: var(--line);
     border-radius: var(--radius);
-    display: grid;
-    place-items: center;
+  }
+  .service-hero__media :global(picture) {
+    display: block;
+    height: 100%;
+  }
+  .service-hero__media :global(img) {
+    width: 100%;
+    height: 112%;
+    object-fit: cover;
+    will-change: transform;
   }
   @media (max-width: 899.98px) {
     .service-hero__inner {
@@ -99,8 +133,7 @@ const { service } = Astro.props;
       gap: var(--space-xl);
     }
     .service-hero__media {
-      aspect-ratio: 2 / 1;
-      padding: var(--space-m);
+      aspect-ratio: 3 / 2;
       order: -1;
     }
   }

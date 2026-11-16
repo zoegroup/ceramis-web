@@ -9,7 +9,7 @@ export const site = {
   defaultTitle: 'Agencia de marketing para restaurantes en Mallorca | CERAMIS',
   defaultDescription:
     'Agencia de marketing para restaurantes, bares y cafeterías en Mallorca. Captamos clientes nuevos, llenamos tus mesas y hacemos que vuelvan.',
-  ogImage: '/brand/og-image-1200x630.png',
+  ogImage: '/og/default.jpg',
   dashboardUrl: PUBLIC_DASHBOARD_URL,
   contact: {
     email: '[EMAIL]',

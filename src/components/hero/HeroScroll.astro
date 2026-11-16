@@ -9,6 +9,7 @@
  */
 import { readFileSync } from 'node:fs';
 import Button from '@/components/Button.astro';
+import CtaNote from '@/components/CtaNote.astro';
 import { primaryCta } from '@/data/site';
 
 // El número de frames sale del manifest que genera scripts/build-hero-frames.sh.
@@ -69,7 +70,7 @@ const manifest = JSON.parse(readFileSync('public/hero/manifest.json', 'utf8')) a
           <h2 class="hero__heading">Mesas que se <em>llenan</em>.</h2>
         </div>
         <div class="hero__bottom">
-          <p class="hero__lead">Reservas por teléfono con IA y desde tu web, 24/7.</p>
+          <p class="hero__lead">Reservas por teléfono con IA, 24/7 y en 6 idiomas.</p>
         </div>
       </div>
 
@@ -90,6 +91,7 @@ const manifest = JSON.parse(readFileSync('public/hero/manifest.json', 'utf8')) a
           <div class="hero__ctas">
             <Button href="#diagnostico" size="lg">{primaryCta.label}</Button>
           </div>
+          <CtaNote class="hero__note" />
         </div>
       </div>
     </div>

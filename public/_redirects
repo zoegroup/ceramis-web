@@ -1,0 +1,3 @@
+# Reservas web se retiró del catálogo: su URL lleva al agente de IA para llamadas.
+/servicios/reservas-web/ /servicios/reservas-telefonicas-ia/ 301
+/servicios/reservas-web /servicios/reservas-telefonicas-ia/ 301

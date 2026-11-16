@@ -146,7 +146,8 @@ html.lenis body {
   }
 }
 
-main:focus {
+main:focus,
+section[tabindex='-1']:focus {
   outline: none;
 }
 

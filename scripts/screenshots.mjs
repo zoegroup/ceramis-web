@@ -13,6 +13,8 @@ const PAGES = {
   home: '/',
   servicios: '/servicios/',
   'reservas-ia': '/servicios/reservas-telefonicas-ia/',
+  redes: '/servicios/gestion-redes-sociales/',
+  'seo-local': '/servicios/seo-local/',
   nosotros: '/sobre-nosotros/',
   contacto: '/contacto/',
   blog: '/blog/',

@@ -1,7 +1,7 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist", "ceramis-web-assets"],
+  "exclude": ["dist", "ceramis-web-assets", "qa"],
   "compilerOptions": {
     "noUncheckedIndexedAccess": true,
     "paths": { "@/*": ["src/*"] }

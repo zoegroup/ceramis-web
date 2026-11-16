@@ -5,6 +5,7 @@
  * y el envío queda bloqueado con un aviso: no hay acción de servidor en un sitio estático).
  */
 import Button from '@/components/Button.astro';
+import CtaNote from '@/components/CtaNote.astro';
 import { legal } from '@/data/site';
 import { services } from '@/data/services';
 
@@ -121,12 +122,14 @@ const f = (name: string) => `${id}-${name}`;
   <input type="hidden" name="source" value={id} />
   {service && <input type="hidden" name="servicio" value={service} />}
   <input type="hidden" name="tipo" value="diagnostico" data-form-type />
+  <input type="hidden" name="plan" value="" data-form-plan />
 
   <div class="cta-form__actions">
     <Button type="submit" size="lg" data-submit>
       <span data-submit-label>{submitLabel}</span>
     </Button>
   </div>
+  <CtaNote class="cta-form__note-cta" />
 
   <p class="cta-form__status" role="status" aria-live="polite" data-status></p>
 </form>
@@ -299,6 +302,10 @@ const f = (name: string) => `${id}-${name}`;
   .cta-form__actions :global(.btn[aria-busy='true']) {
     cursor: progress;
     opacity: 0.75;
+  }
+  .cta-form :global(.cta-form__note-cta) {
+    justify-content: center;
+    margin-top: calc(-1 * var(--space-xs));
   }
   .cta-form__status {
     font-weight: 500;

@@ -1,6 +1,6 @@
 ---
-import ServiceIllustration from '@/components/home/ServiceIllustration.astro';
-import { serviceHref, waitlistHref, type Service } from '@/data/services';
+import { Picture } from 'astro:assets';
+import { euros, serviceHref, waitlistHref, type Service } from '@/data/services';
 
 interface Props {
   service: Service;
@@ -13,13 +13,21 @@ const titleId = `servicio-${service.slug}`;
 ---
 
 <article class="service-card" aria-labelledby={titleId} data-reveal>
-  <div class="service-card__media" transition:name={`servicio-media-${service.slug}`}>
-    <ServiceIllustration name={service.illustration} />
+  <div class="service-card__media" transition:name={`servicio-media-${service.slug}`} data-media-reveal>
+    <Picture
+      src={service.image}
+      alt=""
+      formats={['avif', 'webp']}
+      widths={[400, 640, 900, 1200]}
+      sizes="(min-width: 1280px) 620px, (min-width: 768px) 46vw, 82vw"
+      loading="lazy"
+    />
   </div>
   <div class="service-card__body">
     <p class="service-card__meta">
       <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
       {!service.available && <span class="service-card__badge">Próximamente</span>}
+      <span class="service-card__price">Desde {euros(service.fromPrice)}/mes</span>
     </p>
     <h3 class="h3" id={titleId}>{service.name}</h3>
     <p class="service-card__benefit">{service.benefit}</p>
@@ -57,16 +65,23 @@ const titleId = `servicio-${service.slug}`;
   }
 
   .service-card__media {
-    aspect-ratio: 2 / 1;
-    padding: var(--space-m) var(--space-l);
+    aspect-ratio: 3 / 2;
     border-bottom: var(--line);
     overflow: hidden;
+    background: var(--c-sand);
   }
-  .service-card__media :global(svg) {
+  .service-card__media :global(picture) {
+    display: block;
+    height: 100%;
+  }
+  .service-card__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transition: transform 0.8s var(--ease-out);
   }
-  .service-card:hover .service-card__media :global(svg),
-  .service-card:focus-within .service-card__media :global(svg) {
+  .service-card:hover .service-card__media :global(img),
+  .service-card:focus-within .service-card__media :global(img) {
     transform: scale(1.03);
   }
 
@@ -84,6 +99,12 @@ const titleId = `servicio-${service.slug}`;
     font-weight: 500;
     letter-spacing: var(--tracking-wide);
     color: var(--c-ink-soft);
+  }
+  .service-card__price {
+    margin-left: auto;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--c-accent);
   }
   .service-card__badge {
     padding: 0.2em 0.7em;

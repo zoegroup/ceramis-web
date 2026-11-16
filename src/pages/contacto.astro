@@ -166,11 +166,10 @@ const waitlist = Object.fromEntries(services.filter((s) => !s.available).map((s)
     background: var(--c-surface);
     border: var(--line);
     border-radius: var(--radius);
-    scroll-margin-top: calc(var(--header-h) + var(--space-m));
   }
   .contact__anchor {
     position: absolute;
-    top: calc(-1 * (var(--header-h) + var(--space-m)));
+    top: 0;
   }
   .contact-map {
     padding-bottom: var(--space-3xl);

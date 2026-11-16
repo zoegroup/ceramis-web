@@ -15,6 +15,7 @@ import SEO, { type Props as SEOProps } from '@/components/SEO.astro';
 import SchemaOrg from '@/components/SchemaOrg.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import StickyCta from '@/components/StickyCta.astro';
 import { site } from '@/data/site';
 
 interface Props extends SEOProps {
@@ -64,6 +65,7 @@ const { transparentHeader = false, ...seo } = Astro.props;
       <slot />
     </main>
     <Footer />
+    <StickyCta />
     {
       PUBLIC_CF_ANALYTICS_TOKEN && (
         <script
@@ -80,4 +82,5 @@ const { transparentHeader = false, ...seo } = Astro.props;
 <script>
   import '@/lib/motion';
   import '@/lib/reveal';
+  import '@/lib/fx';
 </script>

@@ -22,7 +22,7 @@ const { roi } = Astro.props;
   </dl>
   <dl class="roi-example__result">
     <dt>{roi.result.label}</dt>
-    <dd>{roi.result.value}</dd>
+    <dd data-count={/^[\d.]+ €$/.test(roi.result.value) ? roi.result.value.replace(/\D/g, '') : undefined}>{roi.result.value}</dd>
   </dl>
   <p class="roi-example__note">{roi.note}</p>
 </div>

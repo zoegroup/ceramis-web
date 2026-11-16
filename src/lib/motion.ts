@@ -55,7 +55,7 @@ async function init() {
 
   let lenis: Lenis | null = null;
   if (!reducedMotion) {
-    lenis = new LenisCtor({ autoRaf: false, anchors: true, lerp: 0.1 });
+    lenis = new LenisCtor({ autoRaf: false, lerp: 0.1 });
     lenis.on('scroll', ScrollTrigger.update);
     tickerFn = (time: number) => lenis?.raf(time * 1000);
     gsap.ticker.add(tickerFn);
@@ -90,11 +90,47 @@ function destroy() {
   ctx = null;
 }
 
+/**
+ * Enlaces a una sección de la misma página (#diagnostico, #precios…). Los gestionamos aquí y no con
+ * el router de Astro ni con Lenis: el router delega el salto en el navegador y, con Lenis activo,
+ * ese salto podía no producirse. Desplaza con Lenis (o de forma nativa sin movimiento), deja hueco
+ * para el header y mueve el foco al destino para el teclado y los lectores de pantalla.
+ */
+function onAnchorClick(e: MouseEvent) {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const link = (e.target as Element | null)?.closest<HTMLAnchorElement>('a[href*="#"]');
+  if (!link || link.target || link.hasAttribute('download')) return;
+  const url = new URL(link.href, location.href);
+  if (url.origin !== location.origin || url.pathname !== location.pathname || !url.hash) return;
+  const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+  if (!target) return;
+
+  e.preventDefault();
+  const focusTarget = () => {
+    if (!target.hasAttribute('tabindex') && !target.matches('a, button, input, select, textarea')) target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  };
+  // En el siguiente frame: deja que otros manejadores terminen (p. ej. el menú móvil se cierra y
+  // reactiva Lenis, que ignora scrollTo mientras está parado). El hueco del header lo da
+  // `scroll-padding-top` (base.css), que respetan tanto Lenis como el navegador.
+  requestAnimationFrame(() => {
+    if (ctx?.lenis) {
+      ctx.lenis.scrollTo(target, { onComplete: focusTarget });
+    } else {
+      target.scrollIntoView({ block: 'start' });
+      focusTarget();
+    }
+  });
+  history.pushState(history.state, '', url.hash);
+}
+
 function listen() {
   if (listening) return;
   listening = true;
   document.addEventListener('astro:page-load', () => void init());
   document.addEventListener('astro:before-swap', destroy);
+  // En captura: antes que el router de Astro (que lo ignora si ya está gestionado).
+  document.addEventListener('click', onAnchorClick, true);
 }
 
 /**

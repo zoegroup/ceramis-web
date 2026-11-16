@@ -8,7 +8,7 @@ import ServiceHero from '@/components/service/ServiceHero.astro';
 import PointList from '@/components/service/PointList.astro';
 import Features from '@/components/service/Features.astro';
 import RoiExample from '@/components/service/RoiExample.astro';
-import Plans from '@/components/service/Plans.astro';
+import Pricing from '@/components/service/Pricing.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
 import Steps from '@/components/Steps.astro';
 import FAQ from '@/components/FAQ.astro';
@@ -38,10 +38,25 @@ const schema = {
     { '@type': 'City', name: 'Palma' },
     { '@type': 'AdministrativeArea', name: 'Mallorca' },
   ],
+  offers: (service.pricing.kind === 'plans'
+    ? service.pricing.plans.map((p) => ({ name: p.name, price: p.monthly }))
+    : [{ name: service.name, price: service.pricing.monthly }]
+  ).map((o) => ({
+    '@type': 'Offer',
+    name: o.name,
+    priceCurrency: 'EUR',
+    priceSpecification: {
+      '@type': 'UnitPriceSpecification',
+      price: o.price,
+      priceCurrency: 'EUR',
+      unitText: 'MONTH',
+      valueAddedTaxIncluded: false,
+    },
+  })),
 };
 ---
 
-<BaseLayout title={service.metaTitle} description={service.metaDescription}>
+<BaseLayout title={service.metaTitle} description={service.metaDescription} image={`/og/${service.slug}.jpg`}>
   <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
 
   <ServiceHero service={service} />
@@ -79,10 +94,14 @@ const schema = {
         <Fragment slot="title">Todo lo que <em>incluye</em>.</Fragment>
       </SectionHeader>
       <Features items={service.features} />
+      <div class="svc-not" data-reveal>
+        <h3 class="h4">Qué no incluye</h3>
+        <ul role="list">{service.notIncluded.map((n) => <li>{n}</li>)}</ul>
+      </div>
     </div>
   </section>
 
-  <section class="svc-section svc-section--sand" aria-labelledby="roi-titulo">
+  <section id="calculadora" class="svc-section svc-section--sand" aria-labelledby="roi-titulo">
     <div class="container">
       {
         service.roi.kind === 'calculator' ? (
@@ -105,13 +124,13 @@ const schema = {
     </div>
   </section>
 
-  <section class="svc-section" aria-labelledby="planes-titulo">
+  <section id="precios" class="svc-section" aria-labelledby="planes-titulo">
     <div class="container">
-      <SectionHeader eyebrow="Planes" id="planes-titulo">
-        <Fragment slot="title">Planes y <em>precios</em>.</Fragment>
-        Te los explicamos en el diagnóstico, adaptados a tu restaurante.
+      <SectionHeader eyebrow="Precios" id="planes-titulo">
+        <Fragment slot="title">Precios claros, <em>sin letra pequeña</em>.</Fragment>
+        Incluye el Portal del Cliente sin coste: tus métricas e informes en tiempo real.
       </SectionHeader>
-      <Plans plans={service.plans} />
+      <Pricing pricing={service.pricing} addon={service.addon} terms={service.terms} serviceName={service.name} />
     </div>
   </section>
 
@@ -130,7 +149,7 @@ const schema = {
     <div class="container">
       <SectionHeader eyebrow="Otros servicios" id="otros-titulo">
         <Fragment slot="title">Funcionan mejor <em>juntos</em>.</Fragment>
-        Todos se gestionan desde el mismo Dashboard.
+        Todos se gestionan desde tu Portal del Cliente.
       </SectionHeader>
       <ul class="svc-others" role="list">
         {
@@ -154,6 +173,26 @@ const schema = {
   }
   .svc-section--sand :global(.steps__dot) {
     background: var(--c-sand);
+  }
+  .svc-not {
+    margin-top: var(--space-xl);
+    max-width: 48rem;
+  }
+  .svc-not ul {
+    display: grid;
+    gap: var(--space-2xs);
+    margin-top: var(--space-s);
+    color: var(--c-ink-soft);
+  }
+  .svc-not li {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+  .svc-not li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--c-stone);
   }
   .svc-faq {
     display: grid;

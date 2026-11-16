@@ -112,10 +112,23 @@ const monthly = await page.locator('[data-roi-out=monthly]').textContent();
 check('Calculadora (10 llamadas → 624 €/mes)', monthly?.replace(/\s/g, '') === '624€', monthly ?? '');
 await shot('10-calculadora');
 
+// --- Barra fija móvil y plan preseleccionado (redes)
+await page.goto(BASE + '/servicios/gestion-redes-sociales/', { waitUntil: 'load' });
+await page.waitForTimeout(1000);
+await page.evaluate(() => document.querySelector('.svc-not').scrollIntoView());
+await page.waitForTimeout(900);
+check('Barra fija de CTA visible al hacer scroll', await page.locator('[data-sticky-cta].is-visible').count() === 1);
+await shot('11-barra-cta');
+await page.evaluate(() => document.querySelector('[data-plan*="Crecimiento"]').click());
+await page.waitForTimeout(1500);
+const planValue = await page.locator('[data-form-plan]').inputValue();
+check('Plan preseleccionado en el formulario', planValue.includes('Crecimiento'), planValue);
+check('Barra fija oculta junto al formulario', (await page.locator('[data-sticky-cta].is-visible').count()) === 0);
+
 // --- Post del blog
 await page.goto(BASE + '/blog/cuanto-dinero-pierde-un-restaurante-por-llamada/', { waitUntil: 'load' });
 await page.waitForTimeout(1000);
-await shot('11-post');
+await shot('12-post');
 
 const cspErrors = errors.filter((e) => /Content Security Policy|Refused to/.test(e));
 check('Sin violaciones de CSP', cspErrors.length === 0, cspErrors.slice(0, 2).join(' | '));

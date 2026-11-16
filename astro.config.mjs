@@ -39,6 +39,8 @@ export default defineConfig({
     formEndpointWarning,
   ],
   devToolbar: { enabled: false },
+  // Precarga la página de cualquier enlace interno al pasar el ratón o tocarlo: la navegación es casi instantánea.
+  prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   // Ningún script de módulo inline: así <ClientRouter /> no necesita inyectar un script `data:`
   // y la CSP puede ser estricta (ver scripts/postbuild.mjs).
   vite: { build: { assetsInlineLimit: 0 } },

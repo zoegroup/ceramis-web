@@ -36,6 +36,7 @@ const bookingsWeek = v.llamadas * (v.porcentaje / 100);
 const weekly = bookingsWeek * perBooking;
 const monthly = (weekly * 52) / 12;
 const yearly = weekly * 52;
+import Button from '@/components/Button.astro';
 ---
 
 <div class="roi" data-roi>
@@ -112,6 +113,9 @@ const yearly = weekly * 52;
       Es una estimación orientativa con los datos que tú introduces, no una promesa de facturación.
       Calculamos el mes como 52 semanas entre 12.
     </p>
+    <Button href="#diagnostico" size="lg" class="roi__cta" data-roi-cta data-plan={`Agente de IA · calculadora: ${eur.format(monthly)}/mes`}>
+      <span>Recupera esos <span data-roi-out="cta">{eur.format(monthly)}</span>/mes</span>
+    </Button>
   </div>
 </div>
 
@@ -221,6 +225,9 @@ const yearly = weekly * 52;
     font-weight: 500;
     font-variant-numeric: tabular-nums;
   }
+  .roi :global(.roi__cta) {
+    width: 100%;
+  }
   .roi__note {
     font-size: var(--fs-small);
     color: var(--c-ink-soft);
@@ -305,6 +312,8 @@ const yearly = weekly * 52;
       out('bookings').textContent = num.format(bookings);
       out('perBooking').textContent = eur.format(perBooking);
       out('weekly').textContent = eur.format(weekly);
+      out('cta').textContent = eur.format(target.monthly);
+      root.querySelector<HTMLElement>('[data-roi-cta]')!.dataset.plan = `Agente de IA · calculadora: ${eur.format(target.monthly)}/mes`;
       countTo(target);
 
       // Solo se anuncia la cifra final, cuando el usuario deja de tocar.

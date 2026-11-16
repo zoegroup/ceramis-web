@@ -139,6 +139,9 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
     try {
       await send(payload);
       form.reset();
+      // El plan es un campo oculto: reset() no lo vacía.
+      const plan = form.querySelector<HTMLInputElement>('[data-form-plan]');
+      if (plan) plan.value = '';
       fields.forEach((field) => showError(field, ''));
       setStatus(status, 'success', form.dataset.success ?? messages.success);
     } catch (err) {
@@ -161,8 +164,30 @@ function setup(form: HTMLFormElement, signal: AbortSignal) {
 
 let abort: AbortController | null = null;
 
+/**
+ * Botones con data-plan (planes, calculadora…): al pulsarlos, el formulario de la página
+ * guarda el plan elegido (campo `plan`) y, si el mensaje está vacío, lo rellena.
+ */
+function setupPlanLinks(signal: AbortSignal) {
+  document.addEventListener(
+    'click',
+    (e) => {
+      const link = (e.target as HTMLElement).closest<HTMLElement>('[data-plan]');
+      const form = document.querySelector<HTMLFormElement>('form[data-form]');
+      if (!link || !form) return;
+      const plan = link.dataset.plan ?? '';
+      const field = form.querySelector<HTMLInputElement>('[data-form-plan]');
+      if (field) field.value = plan;
+      const message = form.querySelector<HTMLTextAreaElement>('textarea[name=mensaje]');
+      if (message && !message.value.trim()) message.value = `Me interesa: ${plan}.`;
+    },
+    { signal }
+  );
+}
+
 export function initForms() {
   abort?.abort();
   abort = new AbortController();
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => setup(form, abort!.signal));
+  setupPlanLinks(abort.signal);
 }

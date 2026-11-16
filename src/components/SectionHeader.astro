@@ -8,10 +8,10 @@ interface Props {
 const { eyebrow, id, align = 'start' } = Astro.props;
 ---
 
-<header class:list={['section-header', `section-header--${align}`]} data-reveal>
-  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-  <h2 id={id}><slot name="title" /></h2>
-  {Astro.slots.has('default') && <p class="lead"><slot /></p>}
+<header class:list={['section-header', `section-header--${align}`]}>
+  {eyebrow && <p class="eyebrow" data-reveal>{eyebrow}</p>}
+  <h2 id={id} data-split><slot name="title" /></h2>
+  {Astro.slots.has('default') && <p class="lead" data-reveal><slot /></p>}
 </header>
 
 <style>

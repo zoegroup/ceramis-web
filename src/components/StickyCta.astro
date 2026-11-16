@@ -1,0 +1,107 @@
+---
+/**
+ * Barra fija de CTA en móvil (<768 px): aparece al pasar el primer pantallazo y se oculta
+ * mientras se ven el hero, el formulario o el footer. Si la página no tiene formulario,
+ * lleva a /contacto/.
+ */
+import { primaryCta, whatsappHref } from '@/data/site';
+---
+
+<div class="sticky-cta" data-sticky-cta aria-hidden="true" inert>
+  <a class="sticky-cta__main" href={primaryCta.href} data-sticky-main>Diagnóstico gratis</a>
+  <a class="sticky-cta__wa" href={whatsappHref} target="_blank" rel="noopener">
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"
+      ><path
+        d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm0 18.2a8.2 8.2 0 01-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1112 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.6.1a6.7 6.7 0 01-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 001.8-1.2 2.2 2.2 0 00.1-1.2c0-.1-.2-.2-.4-.3z"
+      ></path></svg
+    >
+    <span class="visually-hidden">Escríbenos por WhatsApp</span>
+  </a>
+</div>
+
+<style>
+  .sticky-cta {
+    display: none;
+  }
+  @media (max-width: 767.98px) {
+    .sticky-cta {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: calc(var(--z-header) - 1);
+      display: flex;
+      gap: var(--space-xs);
+      padding: var(--space-xs) var(--gutter) max(var(--space-xs), env(safe-area-inset-bottom));
+      background: var(--c-bg-glass);
+      -webkit-backdrop-filter: blur(14px) saturate(1.2);
+      backdrop-filter: blur(14px) saturate(1.2);
+      box-shadow: 0 -1px 0 rgb(185 174 156 / 0.6);
+      transform: translateY(110%);
+      transition: transform 0.45s var(--ease-out);
+    }
+    .sticky-cta.is-visible {
+      transform: none;
+    }
+  }
+  .sticky-cta a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    border-radius: var(--radius);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .sticky-cta__main {
+    flex: 1;
+    background: var(--c-accent);
+    color: var(--c-on-accent);
+  }
+  .sticky-cta__wa {
+    width: 52px;
+    border: 1px solid var(--c-ink);
+    color: var(--c-ink);
+  }
+</style>
+
+<script>
+  let abort: AbortController | null = null;
+
+  document.addEventListener('astro:page-load', () => {
+    abort?.abort();
+    abort = new AbortController();
+    const bar = document.querySelector<HTMLElement>('[data-sticky-cta]');
+    const main = document.querySelector<HTMLAnchorElement>('[data-sticky-main]');
+    if (!bar || !main) return;
+    if (document.getElementById('diagnostico')) main.href = '#diagnostico';
+
+    // Mientras se ven el hero (sus textos van abajo en móvil), el formulario o el footer, no se muestra.
+    const blockers = [
+      document.querySelector('[data-hero]'),
+      document.getElementById('diagnostico'),
+      document.querySelector('.site-footer'),
+    ].filter(Boolean) as Element[];
+    const blocking = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? blocking.add(e.target) : blocking.delete(e.target)));
+      update();
+    });
+    blockers.forEach((b) => io.observe(b));
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const show = window.scrollY > window.innerHeight * 0.9 && blocking.size === 0 && !document.documentElement.style.overflow;
+      bar.classList.toggle('is-visible', show);
+      bar.toggleAttribute('inert', !show);
+      bar.setAttribute('aria-hidden', String(!show));
+    };
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    }, { passive: true, signal: abort.signal });
+    abort.signal.addEventListener('abort', () => io.disconnect());
+    update();
+  });
+</script>

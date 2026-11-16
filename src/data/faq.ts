@@ -15,18 +15,18 @@ export const homeFaq: FaqItem[] = [
   },
   {
     q: '¿Tengo que firmar una permanencia?',
-    a: 'Las condiciones dependen de cada servicio y las verás claras antes de empezar. [POR DEFINIR]',
+    a: 'En los planes de redes sociales y en SEO local, 3 meses: el primero construye la base, el segundo valida qué funciona y el tercero escala. El agente de IA, el recordatorio de reseñas y la tarjeta de fidelización son mensuales, sin permanencia.',
   },
   {
-    q: '¿Mis clientes tienen que instalar alguna app?',
-    a: 'No. La tarjeta de fidelización se guarda en Apple Wallet o Google Wallet, que ya vienen en el móvil. Las reservas se hacen por teléfono o desde tu web y tu ficha de Google.',
+    q: '¿Cuánto cuesta?',
+    a: 'Los planes de redes van de 390 a 1.090 €/mes, el SEO local cuesta 149 €/mes, el agente de IA para llamadas 249 €/mes y la tarjeta de fidelización 50 €/mes. Precios sin IVA; cada servicio tiene además una cuota de alta única.',
   },
   {
     q: '¿Cuánto tarda en notarse?',
-    a: 'Las reservas por teléfono con IA y la tarjeta Wallet funcionan desde el primer día. Las redes necesitan algo más de constancia. Medimos cada mes para que veas la evolución con números. [VALIDAR]',
+    a: 'El agente de IA y la tarjeta de fidelización funcionan desde el primer día. En redes y SEO local seguimos un plan de 90 días: base, validación y escala, con objetivos fijados a partir de tus propios datos.',
   },
   {
     q: '¿Cómo sigo los resultados?',
-    a: 'Desde el CERAMIS Dashboard, tu panel de cliente: reservas, llamadas atendidas, sellos de fidelización y métricas de redes en un solo sitio.',
+    a: 'Desde el Portal del Cliente, incluido sin coste: métricas de redes, posición en Google, reservas y llamadas, sellos de fidelización e informes, en un solo panel desde el móvil o el ordenador.',
   },
 ];

@@ -1,0 +1,24 @@
+---
+/** Línea que quita el miedo a pedir, bajo los CTA principales. */
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<p class:list={['cta-note', className]}>
+  <span>30 min</span><span aria-hidden="true">·</span><span>Gratis</span><span aria-hidden="true">·</span><span>Sin compromiso</span>
+</p>
+
+<style>
+  .cta-note {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+  .cta-note span[aria-hidden] {
+    color: var(--c-brass);
+  }
+</style>

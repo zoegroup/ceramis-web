@@ -1,6 +1,7 @@
 /**
  * Secuencia de frames del hero pintada en <canvas>.
- * - Carga por prioridad (primeros 40 frames, luego el resto) con Image.decode().
+ * - Carga por prioridad con Image.decode(): primeros 40 frames, luego uno de cada dos y al final
+ *   los intermedios. Así todo el recorrido se ve fluido antes, aunque la red sea lenta.
  * - Si un frame aún no está, pinta el más cercano ya cargado (de cualquier set).
  * - Interpola entre frames consecutivos con un fundido, así el scrub no da saltos.
  * - La caché vive a nivel de módulo: navegar y volver no vuelve a descargar nada.
@@ -47,7 +48,10 @@ export class FrameSequence {
     const token = ++this.queueToken;
     const order = Array.from({ length: this.count }, (_, i) => i);
     const head = order.slice(0, PRIORITY_FRAMES);
-    const queue = [...head, ...order.slice(PRIORITY_FRAMES)].filter((i) => !cache.has(this.url(set, i)));
+    const rest = order.slice(PRIORITY_FRAMES);
+    const evens = rest.filter((i) => i % 2 === 0);
+    const odds = rest.filter((i) => i % 2 === 1);
+    const queue = [...head, ...evens, ...odds].filter((i) => !cache.has(this.url(set, i)));
 
     const worker = async () => {
       while (queue.length && token === this.queueToken) {

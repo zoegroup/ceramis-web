@@ -1,0 +1,333 @@
+---
+/**
+ * Precios de un servicio: planes con tabla comparativa y extras (redes) o precio único
+ * con complemento opcional. Los botones llevan al formulario con el plan ya indicado
+ * (data-plan, ver el script de CTAForm).
+ */
+import Button from '@/components/Button.astro';
+import { euros, type Addon, type Pricing } from '@/data/services';
+
+interface Props {
+  pricing: Pricing;
+  addon?: Addon;
+  terms: string;
+  serviceName: string;
+}
+const { pricing, addon, terms, serviceName } = Astro.props;
+---
+
+{
+  pricing.kind === 'plans' ? (
+    <div class="pricing">
+      <ul class="plans" role="list">
+        {pricing.plans.map((plan) => (
+          <li class:list={['plan', plan.featured && 'plan--featured']} data-reveal>
+            {plan.featured && <p class="plan__tag">Recomendado</p>}
+            <h3 class="h4">{plan.name}</h3>
+            <p class="plan__goal">{plan.goal}</p>
+            <p class="plan__price">
+              <strong data-count={plan.monthly}>{euros(plan.monthly)}</strong>
+              <span>/mes</span>
+            </p>
+            <p class="plan__setup">Alta inicial: {euros(plan.setup)} (pago único)</p>
+            <Button href="#diagnostico" variant={plan.featured ? 'primary' : 'secondary'} data-plan={`${serviceName} · ${plan.name}`}>
+              Empezar con {plan.name}
+            </Button>
+          </li>
+        ))}
+      </ul>
+
+      <div class="compare" data-reveal tabindex="0" role="region" aria-label={`Comparativa de planes de ${serviceName}`}>
+        <table>
+          <caption class="visually-hidden">Comparativa de planes de {serviceName}</caption>
+          <thead>
+            <tr>
+              <th scope="col">
+                <span class="visually-hidden">Característica</span>
+              </th>
+              {pricing.plans.map((p) => (
+                <th scope="col" class:list={[p.featured && 'is-featured']}>
+                  {p.name}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {pricing.comparison.map((row) => (
+              <tr>
+                <th scope="row">{row.label}</th>
+                {row.values.map((v, i) => (
+                  <td class:list={[pricing.plans[i]?.featured && 'is-featured', v === '—' && 'is-empty']}>
+                    {v === '—' ? <span aria-label="No incluido">—</span> : v}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="extras" data-reveal>
+        <h3 class="h4">Extras con precio</h3>
+        <dl>
+          {pricing.extras.map((x) => (
+            <div>
+              <dt>{x.label}</dt>
+              <dd>{x.price}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </div>
+  ) : (
+    <div class:list={['pricing', 'pricing--single', addon && 'has-addon']}>
+      <div class="single" data-reveal>
+        <p class="single__price">
+          <strong data-count={pricing.monthly}>{euros(pricing.monthly)}</strong>
+          <span>/mes</span>
+        </p>
+        {pricing.setup && <p class="plan__setup">Alta inicial: {euros(pricing.setup)} (pago único)</p>}
+        <p class="single__summary">{pricing.summary}</p>
+        <ul class="checks" role="list">
+          {pricing.includes.map((i) => (
+            <li>{i}</li>
+          ))}
+        </ul>
+        <Button href="#diagnostico" size="lg" data-plan={serviceName}>
+          Lo quiero para mi restaurante
+        </Button>
+      </div>
+      {addon && (
+        <div class="addon" data-reveal>
+          <p class="addon__tag">Complemento</p>
+          <h3 class="h4">{addon.name}</h3>
+          <p class="addon__price">
+            <strong>+{euros(addon.monthly)}</strong>/mes · {addon.summary}
+          </p>
+          <p>{addon.text}</p>
+          <ul class="checks" role="list">
+            {addon.items.map((i) => (
+              <li>{i}</li>
+            ))}
+          </ul>
+          <Button href="#diagnostico" variant="secondary" data-plan={`${serviceName} + ${addon.name}`}>
+            Añadir {addon.name.toLowerCase()}
+          </Button>
+        </div>
+      )}
+    </div>
+  )
+}
+<p class="terms">
+  <strong>Condiciones:</strong> {terms} Precios sin IVA (21 %).
+</p>
+
+<style>
+  .pricing {
+    display: grid;
+    gap: var(--space-xl);
+  }
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-m);
+    align-items: stretch;
+  }
+  .plan,
+  .single,
+  .addon {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-s);
+    padding: var(--space-l);
+    background: var(--c-surface);
+    border: var(--line);
+    border-radius: var(--radius);
+  }
+  .plan {
+    grid-template-rows: auto auto auto auto 1fr;
+    transition:
+      transform 0.5s var(--ease-out),
+      box-shadow 0.5s var(--ease-out),
+      border-color 0.3s ease;
+  }
+  .plan :global(.btn) {
+    align-self: end;
+  }
+  .plan--featured {
+    border: 2px solid var(--c-brass);
+  }
+  .motion-ok .plan:hover,
+  .motion-ok .plan:focus-within {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 44px -26px rgb(30 28 25 / 0.45);
+  }
+  .plan__tag,
+  .addon__tag {
+    position: absolute;
+    top: 0;
+    left: var(--space-l);
+    transform: translateY(-50%);
+    padding: 0.15em 0.7em;
+    background: var(--c-brass);
+    color: var(--c-ink);
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+  .plan__goal {
+    color: var(--c-ink-soft);
+  }
+  .plan__price,
+  .single__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    color: var(--c-ink-soft);
+  }
+  .plan__price strong,
+  .single__price strong {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--c-accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .plan__setup {
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+
+  .compare {
+    overflow-x: auto;
+    border: var(--line);
+    border-radius: var(--radius);
+    background: var(--c-surface);
+  }
+  table {
+    width: 100%;
+    min-width: 40rem;
+    border-collapse: collapse;
+    font-size: var(--fs-small);
+  }
+  th,
+  td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: var(--line);
+  }
+  thead th {
+    font-size: var(--fs-body);
+    font-weight: 500;
+    border-bottom-color: var(--c-ink);
+  }
+  tbody th {
+    font-weight: 500;
+    width: 24%;
+  }
+  td.is-featured,
+  th.is-featured {
+    background: rgb(176 141 87 / 0.1);
+  }
+  td.is-empty {
+    color: var(--c-stone);
+  }
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+
+  .extras dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: 0 var(--space-xl);
+    margin-top: var(--space-s);
+  }
+  .extras dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding-block: var(--space-xs);
+    border-bottom: var(--line);
+  }
+  .extras dt {
+    color: var(--c-ink-soft);
+  }
+  .extras dd {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .pricing--single {
+    max-width: 34rem;
+  }
+  .pricing--single.has-addon {
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+  .single {
+    border: 2px solid var(--c-brass);
+  }
+  .single__summary {
+    font-weight: 500;
+  }
+  .single :global(.btn),
+  .addon :global(.btn) {
+    justify-self: start;
+    margin-top: var(--space-xs);
+  }
+  .addon {
+    margin-top: var(--space-s);
+    border-style: dashed;
+    border-color: var(--c-brass);
+  }
+  .addon__price strong {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    color: var(--c-accent);
+  }
+  .addon p:not(.addon__tag):not(.addon__price) {
+    color: var(--c-ink-soft);
+  }
+  .checks {
+    display: grid;
+    gap: var(--space-2xs);
+    padding-top: var(--space-s);
+    border-top: var(--line);
+  }
+  .checks li {
+    position: relative;
+    padding-left: 1.6rem;
+  }
+  .checks li::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.45em;
+    width: 0.5rem;
+    height: 0.85rem;
+    border: solid var(--c-brass);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .terms {
+    margin-top: var(--space-l);
+    font-size: var(--fs-small);
+    color: var(--c-ink-soft);
+  }
+
+  @media (max-width: 899.98px) {
+    .plans,
+    .pricing--single.has-addon {
+      grid-template-columns: 1fr;
+    }
+    .plans {
+      max-width: 30rem;
+    }
+  }
+</style>

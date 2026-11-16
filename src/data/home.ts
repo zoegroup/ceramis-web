@@ -49,7 +49,7 @@ export const steps: Step[] = [
   },
   {
     title: 'Medición y mejora',
-    text: 'Cada mes revisamos los datos en tu Dashboard y ajustamos lo que haga falta.',
+    text: 'Cada mes revisamos los datos en tu Portal del Cliente y ajustamos lo que haga falta.',
   },
 ];
 

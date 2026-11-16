@@ -27,6 +27,9 @@ import { problems } from '@/data/home';
         ))
       }
     </ol>
+    <p class="problems__more" data-reveal>
+      <a href="/servicios/reservas-telefonicas-ia/#calculadora">Calcula cuánto pierdes con las llamadas sin contestar <span aria-hidden="true">→</span></a>
+    </p>
   </div>
 </section>
 
@@ -70,6 +73,23 @@ import { problems } from '@/data/home';
   .problems__figure span {
     font-size: var(--fs-small);
     color: var(--c-ink-soft);
+  }
+  .problems__more {
+    margin-top: var(--space-xl);
+  }
+  .problems__more a {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    color: var(--c-accent);
+    text-decoration-color: var(--c-brass);
+    text-underline-offset: 0.3em;
+  }
+  .problems__more a span {
+    display: inline-block;
+    transition: transform var(--dur-fast) ease;
+  }
+  .problems__more a:hover span {
+    transform: translateX(4px);
   }
   .problems__text {
     color: var(--c-ink-soft);
