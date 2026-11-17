@@ -18,7 +18,7 @@ const sections = [
   seoTitle="Aviso legal | CERAMIS"
   description="Aviso legal de The CERAMIS Agency conforme a la Ley 34/2002 de Servicios de la Sociedad de la Información (LSSI-CE)."
   path="/aviso-legal/"
-  updated={new Date('2026-11-04')}
+  updated={new Date('2026-11-17')}
   sections={sections}
 >
   <h2 id="titular">Datos del titular</h2>
@@ -27,11 +27,10 @@ const sections = [
     y de Comercio Electrónico (LSSI-CE), se informa de los datos del titular de {site.url.replace('https://', '')}:
   </p>
   <ul>
-    <li><strong>Titular:</strong> {legal.company} (en adelante, «{site.shortName}»)</li>
+    <li><strong>Titular:</strong> {legal.holder}, trabajador autónomo, con nombre comercial {site.name} (en adelante, «{site.shortName}»)</li>
     <li><strong>NIF:</strong> {legal.nif}</li>
     <li><strong>Domicilio:</strong> {legal.address}</li>
     <li><strong>Email:</strong> <a href={`mailto:${legal.email}`}>{legal.email}</a></li>
-    <li><strong>Datos registrales:</strong> {legal.registry}</li>
   </ul>
 
   <h2 id="objeto">Objeto</h2>

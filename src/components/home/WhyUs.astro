@@ -1,0 +1,188 @@
+---
+/**
+ * Por qué elegirnos: diferenciales frente a una agencia generalista. Va antes de los valores y
+ * lleva la keyword principal de la home en el H2 (CLAUDE.md §9).
+ */
+import SectionHeader from '@/components/SectionHeader.astro';
+import Button from '@/components/Button.astro';
+import CtaNote from '@/components/CtaNote.astro';
+import { reasons } from '@/data/home';
+import { primaryCta, whatsappHref } from '@/data/site';
+
+/** Iconos de línea (24×24, trazo 1.5) para cada motivo, en el mismo orden que `reasons`. */
+const icons: Record<string, string> = {
+  hosteleria:
+    '<path d="M7 3v8a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3M9 13v8M17 21V3c-2 1.5-3 4-3 7v4h3"/>',
+  equipo:
+    '<rect x="3" y="3" width="7.5" height="7.5"/><rect x="13.5" y="3" width="7.5" height="7.5"/><rect x="3" y="13.5" width="7.5" height="7.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5"/>',
+  precios: '<path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.25"/>',
+  libertad: '<path d="M8 11V7a4 4 0 0 1 7.5-2"/><rect x="5" y="11" width="14" height="10"/><path d="M12 15v2"/>',
+  idiomas:
+    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3z"/>',
+  cerca: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+};
+---
+
+<section class="why" aria-labelledby="por-que-titulo">
+  <div class="container">
+    <div class="why__head">
+      <SectionHeader eyebrow="Por qué CERAMIS" id="por-que-titulo">
+        <Fragment slot="title">La agencia de marketing para restaurantes en Mallorca que <em>habla</em> tu idioma.</Fragment>
+        Hay muchas agencias de marketing en Palma. Nosotros solo hacemos una cosa: marketing para restaurantes, bares y
+        cafeterías. Por eso sabemos qué llena un local un martes de noviembre y qué no.
+      </SectionHeader>
+    </div>
+
+    <ol class="why__list" role="list">
+      {
+        reasons.map((r, i) => (
+          <li class="why__item" data-reveal>
+            <span class="why__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={icons[r.icon]} />
+            </span>
+            <p class="why__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</p>
+            <h3 class="h4">{r.title}</h3>
+            <p class="why__text">{r.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="why__cta" data-reveal>
+      <Button href="#diagnostico" size="lg">{primaryCta.label}</Button>
+      <a class="why__wa" href={whatsappHref} target="_blank" rel="noopener">
+        o escríbenos por WhatsApp <span aria-hidden="true">→</span>
+      </a>
+      <CtaNote />
+    </div>
+  </div>
+</section>
+
+<style>
+  .why {
+    padding-block: var(--space-3xl);
+    background: var(--c-surface);
+    border-top: var(--line);
+  }
+  .why__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: var(--line);
+    border-left: var(--line);
+  }
+  .why__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'icon index'
+      'title title'
+      'text text';
+    align-items: center;
+    gap: var(--space-xs) var(--space-s);
+    padding: var(--space-l);
+    border-right: var(--line);
+    border-bottom: var(--line);
+  }
+  /* Línea de latón que se dibuja al pasar por encima */
+  .why__item::before {
+    content: '';
+    position: absolute;
+    inset: -1px -1px auto;
+    height: 2px;
+    background: var(--c-brass);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.8s var(--ease-out);
+  }
+  .why__item:hover::before {
+    transform: scaleX(1);
+  }
+  .why__icon {
+    grid-area: icon;
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border: 1px solid var(--c-brass);
+    border-radius: 50%;
+    color: var(--c-accent);
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+  .why__item:hover .why__icon {
+    background: var(--c-accent);
+    color: var(--c-surface);
+  }
+  .why__index {
+    grid-area: index;
+    justify-self: end;
+    align-self: start;
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    color: var(--c-ink-soft);
+  }
+  .why__item h3 {
+    grid-area: title;
+    margin-top: var(--space-xs);
+  }
+  .why__text {
+    grid-area: text;
+    align-self: start;
+    color: var(--c-ink-soft);
+  }
+  .why__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s) var(--space-m);
+    margin-top: var(--space-xl);
+  }
+  .why__wa {
+    font-weight: 500;
+    color: var(--c-accent);
+    text-decoration-color: var(--c-brass);
+    text-underline-offset: 0.3em;
+  }
+  .why__cta :global(.cta-note) {
+    flex-basis: 100%;
+  }
+
+  @media (max-width: 1023.98px) {
+    .why__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 639.98px) {
+    .why__list {
+      grid-template-columns: 1fr;
+      border-left: 0;
+    }
+    .why__item {
+      grid-template-columns: auto 1fr;
+      grid-template-areas:
+        'icon title'
+        'icon text';
+      align-items: start;
+      gap: var(--space-2xs) var(--space-s);
+      padding: var(--space-m) 0;
+      border-right: 0;
+    }
+    .why__icon {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+    .why__icon svg {
+      width: 22px;
+      height: 22px;
+    }
+    .why__index {
+      display: none;
+    }
+    .why__item h3 {
+      margin-top: 0;
+    }
+  }
+</style>

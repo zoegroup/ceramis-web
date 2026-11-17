@@ -7,6 +7,7 @@ const sections = [
   { id: 'que-son', title: 'Qué son las cookies' },
   { id: 'que-usamos', title: 'Qué usamos en esta web' },
   { id: 'tabla', title: 'Cookies instaladas' },
+  { id: 'terceros', title: 'Enlaces a otros servicios' },
   { id: 'gestionar', title: 'Cómo gestionarlas' },
   { id: 'cambios', title: 'Cambios' },
 ];
@@ -17,13 +18,14 @@ const sections = [
   seoTitle="Política de cookies | CERAMIS"
   description="La web de The CERAMIS Agency no usa cookies. Te explicamos qué tecnologías usamos y por qué no necesitas aceptar nada."
   path="/cookies/"
-  updated={new Date('2026-11-04')}
+  updated={new Date('2026-11-17')}
   sections={sections}
 >
   <h2 id="resumen">En resumen</h2>
   <p>
-    <strong>Esta web no instala cookies</strong>, ni propias ni de terceros. Por eso no te mostramos ningún banner de
-    consentimiento.
+    <strong>Esta web no instala cookies</strong>, ni propias ni de terceros, y tampoco guarda nada en el
+    almacenamiento de tu navegador (localStorage o sessionStorage). Por eso no te mostramos ningún banner de
+    consentimiento: no hay nada que aceptar ni rechazar.
   </p>
 
   <h2 id="que-son">Qué son las cookies</h2>
@@ -49,6 +51,10 @@ const sections = [
     <li>
       <strong>Mapa:</strong> es una imagen estática; no se carga Google Maps hasta que tú pulsas el enlace.
     </li>
+    <li>
+      <strong>Formularios:</strong> se envían sin cookies. Solo tratamos los datos que escribes, como explica la
+      <a href="/privacidad/">política de privacidad</a>.
+    </li>
   </ul>
 
   <h2 id="tabla">Cookies instaladas</h2>
@@ -61,8 +67,21 @@ const sections = [
     </tbody>
   </table>
   <p>
-    Si en el futuro añadimos alguna cookie que no sea técnica, actualizaremos esta tabla y te pediremos el
-    consentimiento antes de instalarla.
+    Nuestro proveedor de alojamiento, Cloudflare, puede instalar de forma puntual una cookie técnica de seguridad
+    (<code>__cf_bm</code>, 30 minutos) para distinguir personas de robots si detecta tráfico sospechoso. Es
+    estrictamente necesaria para proteger la web, no sirve para seguirte y está exenta de consentimiento
+    (art. 22.2 LSSI-CE).
+  </p>
+  <p>
+    Si en el futuro añadimos alguna cookie que no sea técnica (por ejemplo, de publicidad o de analítica con
+    cookies), actualizaremos esta tabla y te pediremos el consentimiento <strong>antes</strong> de instalarla, con
+    la misma facilidad para aceptar que para rechazar.
+  </p>
+
+  <h2 id="terceros">Enlaces a otros servicios</h2>
+  <p>
+    Si pulsas un enlace a WhatsApp, Google Maps o nuestras redes sociales, sales de esta web. Esos servicios tienen
+    sus propias cookies y políticas, que se rigen por sus condiciones y no por esta página.
   </p>
 
   <h2 id="gestionar">Cómo gestionarlas</h2>

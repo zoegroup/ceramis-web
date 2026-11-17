@@ -7,7 +7,7 @@ const service: Service = {
   benefit: 'Tarjeta de sellos en el móvil de tus clientes, en Apple y Google Wallet. Sin apps.',
   available: true,
   image,
-  imageAlt: 'Taza de cerámica con su plato flotando sobre fondo crema.',
+  imageAlt: 'Taza de café de cerámica junto a una tarjeta de sellos con nueve sellos de latón y uno libre.',
   cta: 'Quiero mi tarjeta de fidelización',
   h1: 'Tarjeta de fidelización digital para *cafeterías* y restaurantes',
   metaTitle: 'Tarjeta de fidelización digital para cafeterías | CERAMIS',

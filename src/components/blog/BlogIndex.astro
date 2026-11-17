@@ -25,7 +25,7 @@ const crumbs = [
 ];
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} pageType="CollectionPage" noindex={Boolean(active)}>
   <section class="blog-hero">
     <div class="container">
       <Breadcrumbs items={crumbs} />

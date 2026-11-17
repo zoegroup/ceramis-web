@@ -20,12 +20,12 @@ const sections = [
   seoTitle="Política de privacidad | CERAMIS"
   description="Cómo trata The CERAMIS Agency tus datos personales conforme al RGPD y la LOPDGDD: finalidades, base legal, conservación y tus derechos."
   path="/privacidad/"
-  updated={new Date('2026-11-04')}
+  updated={new Date('2026-11-17')}
   sections={sections}
 >
   <h2 id="responsable">Responsable</h2>
   <ul>
-    <li><strong>Responsable:</strong> {legal.company}</li>
+    <li><strong>Responsable:</strong> {legal.holder} ({site.name})</li>
     <li><strong>NIF:</strong> {legal.nif}</li>
     <li><strong>Domicilio:</strong> {legal.address}</li>
     <li><strong>Email de contacto para privacidad:</strong> <a href={`mailto:${legal.email}`}>{legal.email}</a></li>
@@ -63,7 +63,7 @@ const sections = [
 
   <h2 id="conservacion">Conservación</h2>
   <p>
-    Conservamos tus datos mientras sean necesarios para atender tu solicitud y, como máximo, [PLAZO] desde el último
+    Conservamos tus datos mientras sean necesarios para atender tu solicitud y, como máximo, 12 meses desde el último
     contacto si no llegas a ser cliente. Si contratas un servicio, se conservarán durante la relación y los plazos
     legales aplicables.
   </p>
@@ -75,15 +75,15 @@ const sections = [
   </p>
   <ul>
     <li><strong>Cloudflare, Inc.:</strong> alojamiento de la web y analítica sin cookies.</li>
-    <li><strong>[PROVEEDOR]:</strong> alojamiento del sistema que recibe los formularios (n8n).</li>
-    <li><strong>[PROVEEDOR DE EMAIL]:</strong> envío y recepción de correo.</li>
+    <li><strong>Resend (Plus Five Five, Inc.):</strong> envío por email de las solicitudes de los formularios.</li>
+    <li><strong>Google Ireland Ltd. (Google Workspace):</strong> recepción y gestión del correo electrónico.</li>
   </ul>
 
   <h2 id="transferencias">Transferencias internacionales</h2>
   <p>
-    Algunos proveedores, como Cloudflare, pueden tratar datos fuera del Espacio Económico Europeo. En ese caso se
-    amparan en el Marco de Privacidad de Datos UE-EE. UU. o en cláusulas contractuales tipo aprobadas por la Comisión
-    Europea. [VALIDAR]
+    Algunos proveedores, como Cloudflare, Resend o Google, pueden tratar datos fuera del Espacio Económico Europeo. En
+    ese caso se amparan en el Marco de Privacidad de Datos UE-EE. UU. o en cláusulas contractuales tipo aprobadas por
+    la Comisión Europea.
   </p>
 
   <h2 id="derechos">Tus derechos</h2>

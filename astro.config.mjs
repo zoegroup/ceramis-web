@@ -2,23 +2,6 @@
 import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
-import { loadEnv } from 'vite';
-
-/**
- * Avisa (sin fallar) si se construye sin endpoint de formularios.
- * @type {import('astro').AstroIntegration}
- */
-const formEndpointWarning = {
-  name: 'ceramis:form-endpoint-warning',
-  hooks: {
-    'astro:build:start': ({ logger }) => {
-      const env = { ...loadEnv('production', process.cwd(), 'PUBLIC_'), ...process.env };
-      if (!env.PUBLIC_FORM_ENDPOINT) {
-        logger.warn('PUBLIC_FORM_ENDPOINT está vacío: los formularios mostrarán un error al enviar.');
-      }
-    },
-  },
-};
 
 export default defineConfig({
   site: 'https://ceramisagency.com',
@@ -34,9 +17,8 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    // Las legales llevan noindex: fuera del sitemap.
-    sitemap({ filter: (page) => !/\/(aviso-legal|privacidad|cookies)\/$/.test(page) }),
-    formEndpointWarning,
+    // Las legales y las etiquetas del blog llevan noindex: fuera del sitemap.
+    sitemap({ filter: (page) => !/\/(aviso-legal|privacidad|cookies)\/$|\/blog\/etiqueta\//.test(page) }),
   ],
   devToolbar: { enabled: false },
   // Precarga la página de cualquier enlace interno al pasar el ratón o tocarlo: la navegación es casi instantánea.
@@ -51,6 +33,7 @@ export default defineConfig({
         access: 'public',
         default: 'https://app.ceramisagency.com',
       }),
+      // Vacío = la función de Cloudflare /api/contacto (envía el email). Solo para usar otro destino.
       PUBLIC_FORM_ENDPOINT: envField.string({ context: 'client', access: 'public', default: '' }),
       PUBLIC_CF_ANALYTICS_TOKEN: envField.string({ context: 'client', access: 'public', default: '' }),
     },

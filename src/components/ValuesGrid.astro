@@ -1,12 +1,13 @@
 ---
 /**
  * Valores CERAMIS sobre la rejilla 3×3 del logo.
- * - Animado (≥768 px, alto suficiente, con movimiento): pin de ~200vh; cada letra se ilumina
- *   en secuencia y a la derecha aparecen sus dos palabras y su frase.
- * - Estático (móvil, reduced-motion o sin JS): rejilla fija (sticky) + lista vertical con reveal.
+ * - Animado (con movimiento y alto suficiente, también en móvil): pin de ~280vh; cada letra se
+ *   ilumina en secuencia y aparecen sus dos palabras y su frase (a la derecha en escritorio,
+ *   debajo de la rejilla en tablet y móvil).
+ * - Estático (reduced-motion, pantallas muy bajas o sin JS): rejilla fija (sticky) + lista vertical.
  */
 import SectionHeader from '@/components/SectionHeader.astro';
-import { values, valuesGridLayout } from '@/data/values';
+import { motto, values, valuesGridLayout } from '@/data/values';
 
 const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
 ---
@@ -15,7 +16,7 @@ const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
   <div class="values__inner container">
     <SectionHeader eyebrow="Valores CERAMIS" id="valores-titulo">
       <Fragment slot="title">Siete letras. <em>Catorce</em> palabras.</Fragment>
-      CERAMIS no es un nombre al azar. Cada letra es una forma de trabajar contigo.
+      CERAMIS no es un nombre al azar. Es nuestra forma de trabajar: <strong class="values__motto">{motto}</strong>
     </SectionHeader>
 
     <div class="values__stage">
@@ -135,6 +136,10 @@ const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
   .values__dot {
     color: var(--c-brass);
   }
+  .values__motto {
+    font-weight: 500;
+    color: var(--c-ink);
+  }
   .values__text {
     color: var(--c-ink-soft);
   }
@@ -211,6 +216,46 @@ const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
       display: none;
     }
   }
+
+  /* Móvil con pin: cabecera compacta, rejilla pequeña arriba y el valor activo debajo. */
+  @media (max-width: 767.98px) {
+    .values.is-pinned .values__inner {
+      padding-top: calc(var(--header-h) + var(--space-s));
+      padding-bottom: var(--space-m);
+    }
+    .values.is-pinned :global(.section-header) {
+      gap: var(--space-2xs);
+      margin-bottom: var(--space-s);
+    }
+    .values.is-pinned :global(.section-header h2) {
+      font-size: var(--fs-h3);
+    }
+    /* El lema se lee en la lista estática y en escritorio; aquí falta sitio. */
+    .values.is-pinned :global(.section-header .lead) {
+      display: none;
+    }
+    .values.is-pinned .values__stage {
+      grid-template-rows: auto minmax(0, 1fr);
+      align-content: start;
+      gap: var(--space-m);
+    }
+    .values.is-pinned .values__grid {
+      width: min(74vw, 40svh);
+      border-width: 1.5px;
+    }
+    .values.is-pinned .values__list {
+      align-self: start;
+    }
+    .values.is-pinned .values__item {
+      padding-block: var(--space-s);
+    }
+    .values.is-pinned .values__words {
+      font-size: var(--fs-h3);
+    }
+    .values.is-pinned .values__text {
+      font-size: var(--fs-small);
+    }
+  }
 </style>
 
 <script>
@@ -224,7 +269,9 @@ const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
     const cells = Array.from(section.querySelectorAll<HTMLElement>('[data-cell]'));
     const items = Array.from(section.querySelectorAll<HTMLElement>('[data-value]'));
     const n = items.length;
-    const pinQuery = '(min-width: 768px) and (min-height: 600px)';
+    // Pin también en móvil: la lista larga se hacía pesada de leer. Solo se descarta en pantallas
+    // muy bajas (móvil en horizontal), donde la rejilla y el texto no caben a la vez.
+    const pinQuery = '(min-height: 560px)';
 
     const mm = gsap.matchMedia();
     // Sin pin: lista vertical con reveal.
@@ -246,7 +293,8 @@ const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
         scrollTrigger: {
           trigger: section,
           start: 'top top',
-          end: () => `+=${window.innerHeight * 2}`,
+          // ~0,4 pantallas por valor: da tiempo a leer cada frase.
+          end: () => `+=${window.innerHeight * n * 0.4}`,
           pin: true,
           scrub: 0.5,
           anticipatePin: 1,
@@ -254,9 +302,10 @@ const indexOf = (cell: string) => values.findIndex((v) => v.letter === cell);
           onUpdate: (self) => setActive(Math.min(n - 1, Math.floor(self.progress * n))),
         },
       });
-      // Una unidad de tiempo por valor; el cambio ocurre al final de cada tramo.
+      // Una unidad de tiempo por valor. El relevo ocurre justo en el cambio de letra (setActive),
+      // así cada frase se queda quieta y legible la mayor parte de su tramo.
       for (let i = 1; i < n; i++) {
-        tl.to(items[i - 1]!, { autoAlpha: 0, y: -24 }, i - 0.35).to(items[i]!, { autoAlpha: 1, y: 0 }, i - 0.1);
+        tl.to(items[i - 1]!, { autoAlpha: 0, y: -24, duration: 0.15 }, i - 0.15).to(items[i]!, { autoAlpha: 1, y: 0, duration: 0.25 }, i);
       }
       tl.to({}, { duration: 0.6 }, n - 0.6);
 

@@ -1,7 +1,19 @@
 ---
+/**
+ * "Cómo trabajamos" de la home: cuatro tarjetas grandes unidas por una línea de latón que se
+ * dibuja con el scroll; cada tarjeta se enciende cuando la línea llega a ella.
+ * Horizontal desde 1024 px y vertical por debajo. Sin JS o con reduced-motion se ve todo encendido.
+ */
 import SectionHeader from '@/components/SectionHeader.astro';
-import Steps from '@/components/Steps.astro';
+import Button from '@/components/Button.astro';
 import { steps } from '@/data/home';
+
+const icons: Record<string, string> = {
+  diagnostico: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M8 10.5h5M10.5 8v5"/>',
+  plan: '<path d="M5 3h10l4 4v14H5z"/><path d="M15 3v4h4M8.5 12h7M8.5 15.5h7M8.5 19h4"/>',
+  implementacion: '<path d="M14.5 6.5a4 4 0 0 0-5.3 5.3L3.5 17.5l3 3 5.7-5.7a4 4 0 0 0 5.3-5.3l-2.3 2.3-2.4-.6-.6-2.4z"/>',
+  medicion: '<path d="M3 21h18M6 17v-5M11 17V8M16 17v-7M20 4l-5 4-4-2-6 4"/>',
+};
 ---
 
 <section class="process" aria-labelledby="proceso-titulo">
@@ -10,7 +22,45 @@ import { steps } from '@/data/home';
       <Fragment slot="title">De la primera charla a las <em>mesas llenas</em>.</Fragment>
       Cuatro pasos, sin letra pequeña. Tú decides en cada uno si seguimos.
     </SectionHeader>
-    <Steps steps={steps} />
+
+    <div class="flow" data-flow>
+      <span class="flow__line" aria-hidden="true"><span class="flow__fill"></span></span>
+      <ol class="flow__list" role="list">
+        {
+          steps.map((step, i) => (
+            <li class="flow__item is-on" data-flow-item>
+              <span class="flow__node" aria-hidden="true">
+                <span>{i + 1}</span>
+              </span>
+              <article class="flow__card">
+                <header class="flow__top">
+                  <p class="flow__num" aria-hidden="true">
+                    {String(i + 1).padStart(2, '0')}
+                  </p>
+                  <span class="flow__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={icons[step.icon]} />
+                  </span>
+                </header>
+                <p class="flow__when">{step.when}</p>
+                <h3 class="h4">
+                  <span class="visually-hidden">Paso {i + 1}: </span>
+                  {step.title}
+                </h3>
+                <p class="flow__text">{step.text}</p>
+                <p class="flow__deliverable">
+                  <span>Te llevas</span>
+                  {step.deliverable}
+                </p>
+              </article>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="process__cta">
+      <Button href="#diagnostico" size="lg">Empieza por el paso 1</Button>
+    </div>
   </div>
 </section>
 
@@ -19,7 +69,225 @@ import { steps } from '@/data/home';
     padding-block: var(--space-3xl);
     background: var(--c-sand);
   }
-  .process :global(.steps__dot) {
+
+  .flow {
+    --p: 1;
+    --node: 2.75rem;
+    position: relative;
+  }
+  .flow__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+  /* Línea que une los nodos: de centro del primero a centro del último */
+  .flow__line {
+    position: absolute;
+    top: calc(var(--node) / 2);
+    left: calc(var(--node) / 2);
+    right: calc((100% - 3 * var(--space-m)) / 4 - var(--node) / 2);
+    height: 2px;
+    background: rgb(185 174 156 / 0.6);
+  }
+  .flow__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--c-brass);
+    transform: scaleX(var(--p));
+    transform-origin: left;
+  }
+  .flow__item {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-m);
+  }
+  .flow__node {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: var(--node);
+    height: var(--node);
+    border: 2px solid var(--c-stone);
+    border-radius: 50%;
     background: var(--c-sand);
+    font-weight: 500;
+    color: var(--c-ink-soft);
+    transition:
+      background-color 0.5s ease,
+      border-color 0.5s ease,
+      color 0.5s ease,
+      transform 0.6s var(--ease-out);
+  }
+  .flow__card {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    height: 100%;
+    padding: var(--space-l);
+    background: var(--c-surface);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    box-shadow: 0 1px 0 rgb(30 28 25 / 0.04);
+    /* Sin encender: plana y algo más baja. El texto mantiene siempre su contraste (AA). */
+    transform: translateY(16px);
+    transition:
+      transform 0.7s var(--ease-out),
+      border-color 0.5s ease,
+      box-shadow 0.7s var(--ease-out);
+  }
+  .flow__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: var(--space-2xs);
+  }
+  .flow__num {
+    font-size: clamp(3rem, 2rem + 3vw, 4.75rem);
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    /* Apagado: piedra oscurecida, mínimo 3:1 sobre hueso (texto grande, WCAG AA). */
+    color: #928774;
+    transition: color 0.6s ease;
+  }
+  .flow__icon {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--c-bg);
+    color: var(--c-accent);
+  }
+  .flow__when {
+    font-size: var(--fs-eyebrow);
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+  .flow__text {
+    color: var(--c-ink-soft);
+  }
+  .flow__deliverable {
+    display: grid;
+    gap: var(--space-3xs);
+    margin-top: auto;
+    padding-top: var(--space-s);
+    border-top: var(--line);
+    font-weight: 500;
+  }
+  .flow__deliverable span {
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--c-ink-soft);
+  }
+
+  /* Encendido */
+  .flow__item.is-on .flow__node {
+    border-color: var(--c-brass);
+    background: var(--c-brass);
+    color: var(--c-ink);
+    transform: scale(1.08);
+  }
+  .flow__item.is-on .flow__card {
+    transform: none;
+    border-color: var(--c-brass);
+    box-shadow: 0 24px 48px -30px rgb(30 28 25 / 0.45);
+  }
+  .flow__item.is-on .flow__num {
+    color: var(--c-accent);
+  }
+
+  .process__cta {
+    margin-top: var(--space-xl);
+  }
+
+  /* Vertical: nodos a la izquierda y la línea baja con el scroll */
+  @media (max-width: 1023.98px) {
+    .flow__list {
+      grid-template-columns: 1fr;
+      gap: var(--space-l);
+    }
+    .flow__line {
+      top: calc(var(--node) / 2);
+      bottom: calc(var(--node) / 2);
+      left: calc(var(--node) / 2 - 1px);
+      right: auto;
+      width: 2px;
+      height: auto;
+    }
+    .flow__fill {
+      transform: scaleY(var(--p));
+      transform-origin: top;
+    }
+    .flow__item {
+      grid-template-columns: var(--node) minmax(0, 1fr);
+      gap: var(--space-s);
+    }
+    .flow__card {
+      padding: var(--space-m);
+      transform: translateX(12px);
+    }
+    .flow__num {
+      font-size: 2.75rem;
+    }
   }
 </style>
+
+<script>
+  import { onMotion } from '@/lib/motion';
+
+  onMotion(({ gsap, reducedMotion }) => {
+    const flow = document.querySelector<HTMLElement>('[data-flow]');
+    if (!flow || reducedMotion) return;
+    const items = Array.from(flow.querySelectorAll<HTMLElement>('[data-flow-item]'));
+    const line = flow.querySelector<HTMLElement>('.flow__line')!;
+
+    // Umbral de cada tarjeta = posición de su nodo a lo largo de la línea (0–1). Se mide en cada refresh.
+    let thresholds: number[] = [];
+    const measure = () => {
+      const l = line.getBoundingClientRect();
+      const vertical = l.height > l.width;
+      const length = vertical ? l.height : l.width;
+      thresholds = items.map((item) => {
+        const n = item.querySelector<HTMLElement>('.flow__node')!.getBoundingClientRect();
+        const pos = vertical ? n.top + n.height / 2 - l.top : n.left + n.width / 2 - l.left;
+        return length ? pos / length : 0;
+      });
+    };
+    const paint = (p: number) => items.forEach((item, i) => item.classList.toggle('is-on', p >= (thresholds[i] ?? 0) - 0.02));
+
+    const tween = gsap.fromTo(
+      flow,
+      { '--p': 0 },
+      {
+        '--p': 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: flow,
+          start: 'top 75%',
+          end: () => (window.innerWidth < 1024 ? 'bottom 70%' : 'center 45%'),
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            measure();
+            paint(Number(gsap.getProperty(flow, '--p')));
+          },
+        },
+        onUpdate() {
+          paint(Number(gsap.getProperty(flow, '--p')));
+        },
+      }
+    );
+
+    return () => {
+      tween.kill();
+      gsap.set(flow, { clearProps: '--p' });
+      items.forEach((el) => el.classList.add('is-on'));
+    };
+  });
+</script>

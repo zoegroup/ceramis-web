@@ -12,7 +12,7 @@ import '@/styles/tokens.css';
 import '@/styles/base.css';
 import '@/styles/typography.css';
 import SEO, { type Props as SEOProps } from '@/components/SEO.astro';
-import SchemaOrg from '@/components/SchemaOrg.astro';
+import SchemaOrg, { type PageType } from '@/components/SchemaOrg.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import StickyCta from '@/components/StickyCta.astro';
@@ -21,9 +21,11 @@ import { site } from '@/data/site';
 interface Props extends SEOProps {
   /** El header empieza transparente (p. ej. sobre el hero). */
   transparentHeader?: boolean;
+  /** Tipo de página para schema.org (WebPage por defecto). */
+  pageType?: PageType;
 }
 
-const { transparentHeader = false, ...seo } = Astro.props;
+const { transparentHeader = false, pageType, ...seo } = Astro.props;
 ---
 
 <!doctype html>
@@ -51,7 +53,7 @@ const { transparentHeader = false, ...seo } = Astro.props;
     <link rel="preload" href={jost500} as="font" type="font/woff2" crossorigin />
     <slot name="head" />
     <SEO {...seo} />
-    <SchemaOrg />
+    <SchemaOrg title={seo.title} description={seo.description} pageType={pageType} noindex={seo.noindex} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

@@ -71,7 +71,9 @@ if (errors) {
 
 const formOrigin = (() => {
   try {
-    return env.PUBLIC_FORM_ENDPOINT ? new URL(env.PUBLIC_FORM_ENDPOINT).origin : '';
+    // Vacío o relativo (/api/contacto, la función de Cloudflare): mismo origen, ya cubierto por 'self'.
+    if (!env.PUBLIC_FORM_ENDPOINT || env.PUBLIC_FORM_ENDPOINT.startsWith('/')) return '';
+    return new URL(env.PUBLIC_FORM_ENDPOINT).origin;
   } catch {
     console.warn('postbuild: PUBLIC_FORM_ENDPOINT no es una URL válida; no se añade a connect-src.');
     return '';
@@ -106,5 +108,5 @@ writeFileSync(headersPath, headers.replace(/^\/\*\n/m, `/*\n${line}\n`));
 warnings.forEach((w) => console.warn(`⚠ ${w}`));
 console.log(
   `postbuild: ${ldCount} JSON-LD válidos, ${warnings.length} avisos; CSP con ${hashes.size} hashes` +
-    (formOrigin ? ` y connect-src ${formOrigin}.` : ' (sin endpoint de formularios).')
+    (formOrigin ? ` y connect-src ${formOrigin}.` : ' (formularios en /api/contacto, mismo origen).')
 );

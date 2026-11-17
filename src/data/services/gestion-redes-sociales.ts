@@ -7,7 +7,7 @@ const service: Service = {
   benefit: 'Estrategia, grabación y contenido que trae clientes nuevos a tu puerta.',
   available: true,
   image,
-  imageAlt: 'Cámara de fotos color latón flotando sobre fondo crema.',
+  imageAlt: 'Móvil de cerámica con el perfil de un restaurante: una cuadrícula de fotos de platos y cafés.',
   cta: 'Quiero mi plan de redes',
   h1: 'Gestión de redes sociales para restaurantes en *Palma*',
   metaTitle: 'Gestión de redes para restaurantes en Palma | CERAMIS',

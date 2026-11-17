@@ -23,9 +23,20 @@ import { services } from '@/data/services';
       }
     </ul>
   </div>
-  <p class="services__count container" aria-hidden="true" data-services-count>
-    <span data-services-current>1</span> / {services.length}
-  </p>
+  <div class="services__controls container" data-services-controls>
+    <ol class="services__dots" role="list" aria-hidden="true">
+      {services.map((_, i) => <li class:list={['services__dot', i === 0 && 'is-active']} />)}
+    </ol>
+    <p class="visually-hidden" aria-live="polite" data-services-status></p>
+    <div class="services__arrows">
+      <button type="button" class="services__arrow" data-services-prev aria-label="Servicio anterior" disabled>
+        <span aria-hidden="true">←</span>
+      </button>
+      <button type="button" class="services__arrow" data-services-next aria-label="Servicio siguiente">
+        <span aria-hidden="true">→</span>
+      </button>
+    </div>
+  </div>
 </section>
 
 <style>
@@ -40,7 +51,7 @@ import { services } from '@/data/services';
     width: min(100% - 2 * var(--gutter), var(--container));
     margin-inline: auto;
   }
-  .services__count {
+  .services__controls {
     display: none;
   }
 
@@ -59,7 +70,7 @@ import { services } from '@/data/services';
     .services__grid {
       grid-template-columns: none;
       grid-auto-flow: column;
-      grid-auto-columns: min(82vw, 22rem);
+      grid-auto-columns: min(calc(100vw - 2 * var(--gutter) - 2.25rem), 24rem);
       gap: var(--space-s);
       width: max-content;
       padding-inline: var(--gutter);
@@ -68,29 +79,79 @@ import { services } from '@/data/services';
     .services__item {
       scroll-snap-align: start;
     }
-    .services__count {
-      display: block;
+    .services__controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-m);
       margin-top: var(--space-m);
-      font-size: var(--fs-small);
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      color: var(--c-ink-soft);
+    }
+    .services__dots {
+      display: flex;
+      gap: 6px;
+    }
+    .services__dot {
+      width: 1.5rem;
+      height: 2px;
+      background: var(--c-stone);
+      transition:
+        width 0.4s var(--ease-out),
+        background-color 0.4s ease;
+    }
+    .services__dot.is-active {
+      width: 3rem;
+      background: var(--c-accent);
+    }
+    .services__arrows {
+      display: flex;
+      gap: var(--space-xs);
+    }
+    .services__arrow {
+      display: grid;
+      place-items: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      border: 1px solid var(--c-ink);
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--c-ink);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition:
+        background-color var(--dur-fast) ease,
+        color var(--dur-fast) ease,
+        opacity var(--dur-fast) ease;
+    }
+    .services__arrow:hover:not(:disabled) {
+      background: var(--c-ink);
+      color: var(--c-surface);
+    }
+    .services__arrow:disabled {
+      opacity: 0.35;
+      cursor: default;
     }
   }
 </style>
 
 <script>
-  // Contador "1 / 4" del carrusel móvil. Sin dependencias: solo lee el scroll horizontal.
+  // Carrusel móvil: indicador de posición y flechas. Sin dependencias: solo lee el scroll horizontal.
   let abort: AbortController | null = null;
 
   document.addEventListener('astro:page-load', () => {
     abort?.abort();
     abort = new AbortController();
+    const { signal } = abort;
     const track = document.querySelector<HTMLElement>('[data-services-track]');
-    const current = document.querySelector<HTMLElement>('[data-services-current]');
-    if (!track || !current) return;
+    const controls = document.querySelector<HTMLElement>('[data-services-controls]');
+    if (!track || !controls) return;
     const items = Array.from(track.querySelectorAll<HTMLElement>('.services__item'));
-    const update = () => {
+    const dots = Array.from(controls.querySelectorAll<HTMLElement>('.services__dot'));
+    const prev = controls.querySelector<HTMLButtonElement>('[data-services-prev]')!;
+    const next = controls.querySelector<HTMLButtonElement>('[data-services-next]')!;
+    const status = controls.querySelector<HTMLElement>('[data-services-status]')!;
+    let current = 0;
+
+    const nearest = () => {
       const left = track.getBoundingClientRect().left;
       let best = 0;
       let bestDist = Infinity;
@@ -101,8 +162,31 @@ import { services } from '@/data/services';
           best = i;
         }
       });
-      current.textContent = String(best + 1);
+      // Al final del scroll la última tarjeta no llega al borde izquierdo: cuenta como activa.
+      if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 4) best = items.length - 1;
+      return best;
     };
-    track.addEventListener('scroll', update, { passive: true, signal: abort.signal });
+    const update = () => {
+      const i = nearest();
+      if (i === current && dots[i]?.classList.contains('is-active')) return;
+      current = i;
+      dots.forEach((d, j) => d.classList.toggle('is-active', j === i));
+      prev.disabled = i === 0;
+      next.disabled = i === items.length - 1;
+      status.textContent = `Servicio ${i + 1} de ${items.length}`;
+    };
+    const go = (i: number) => {
+      const target = items[Math.max(0, Math.min(items.length - 1, i))];
+      if (!target) return;
+      const smooth = document.documentElement.classList.contains('motion-ok');
+      const pad = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+      const left = track.scrollLeft + target.getBoundingClientRect().left - track.getBoundingClientRect().left - pad;
+      track.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' });
+    };
+
+    track.addEventListener('scroll', update, { passive: true, signal });
+    prev.addEventListener('click', () => go(current - 1), { signal });
+    next.addEventListener('click', () => go(current + 1), { signal });
+    update();
   });
 </script>

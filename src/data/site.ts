@@ -12,15 +12,18 @@ export const site = {
   ogImage: '/og/default.jpg',
   dashboardUrl: PUBLIC_DASHBOARD_URL,
   contact: {
-    email: '[EMAIL]',
-    phone: '[TELÉFONO]',
-    /** Solo dígitos con prefijo de país, p. ej. 34600000000 */
-    whatsapp: '[TELEFONO]',
+    email: 'the@ceramisagency.com',
+    /** Para mostrar. */
+    phone: '+34 604 33 91 03',
+    /** Para enlaces tel: y schema (E.164). */
+    phoneHref: '+34604339103',
+    /** Solo dígitos con prefijo de país (wa.me). */
+    whatsapp: '34604339103',
     whatsappText: 'Hola, quiero pedir el diagnóstico gratis para mi restaurante.',
     city: 'Palma de Mallorca',
     region: 'Illes Balears',
     hours: [{ days: 'Lunes a viernes', time: '9:00–18:00 [VALIDAR]' }],
-    /** Hasta tener [DOMICILIO]: el mapa y las indicaciones apuntan al centro de Palma. */
+    /** El mapa y las indicaciones apuntan al centro de Palma, no al domicilio del titular. */
     mapsHref: 'https://www.google.com/maps/search/?api=1&query=Palma+de+Mallorca',
   },
   social: [
@@ -36,13 +39,18 @@ export const schemaIds = {
   website: 'https://ceramisagency.com/#website',
 } as const;
 
-/** Datos legales (la SL está en constitución). Se usan en formularios y páginas legales. */
+/**
+ * Titular de la web: trabajador autónomo (persona física). Se usan en el formulario (primera capa
+ * RGPD), las páginas legales y el schema. La LSSI-CE (art. 10) obliga a publicar nombre, NIF y domicilio.
+ */
 export const legal = {
-  company: '[RAZÓN SOCIAL]',
-  nif: '[NIF]',
-  address: '[DOMICILIO]',
-  email: '[EMAIL]',
-  registry: '[REGISTRO MERCANTIL]',
+  holder: 'Juan David Marulanda Villa',
+  nif: '49921440D',
+  street: 'Carrer de Sant Ignasi, 58',
+  postalCode: '07008',
+  locality: 'Palma',
+  address: 'Carrer de Sant Ignasi, 58, 07008 Palma (Illes Balears)',
+  email: 'the@ceramisagency.com',
 } as const;
 
 export const nav = [

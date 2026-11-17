@@ -69,12 +69,28 @@ for (const [i, [f, step]] of [[0.15, 1], [0.5, 2], [0.88, 3], [0.995, 4]].entrie
 await page.evaluate(() => document.querySelector('#servicios').scrollIntoView());
 await page.waitForTimeout(1200);
 await shot('06-servicios');
+const activeDot = () => page.evaluate(() => [...document.querySelectorAll('.services__dot')].findIndex((d) => d.classList.contains('is-active')));
+await page.click('[data-services-next]');
+await page.waitForTimeout(900);
+check('Carrusel de servicios: flecha siguiente', (await activeDot()) === 1, String(await activeDot()));
 const track = page.locator('[data-services-track]');
-await track.evaluate((t) => t.scrollBy({ left: t.clientWidth, behavior: 'instant' }));
+await track.evaluate((t) => t.scrollBy({ left: t.scrollWidth, behavior: 'instant' }));
 await page.waitForTimeout(600);
-check('Carrusel de servicios con scroll-snap', (await page.locator('[data-services-current]').textContent()) !== '1');
-await page.evaluate(() => document.querySelector('[data-values]').scrollIntoView());
+check('Carrusel de servicios: último servicio y flecha desactivada', (await activeDot()) === 3 && (await page.locator('[data-services-next]').isDisabled()));
+
+// Valores: también con pin en móvil, la letra activa avanza con el scroll
+const valuesTop = await page.evaluate(() => document.querySelector('[data-values]').getBoundingClientRect().top + scrollY);
+await scrollTo(Math.round(valuesTop + 10));
+await page.waitForTimeout(900);
+check('Valores con pin en móvil', await page.evaluate(() => document.querySelector('[data-values]').classList.contains('is-pinned')));
+const pinLen = await page.evaluate(() => {
+  const spacer = document.querySelector('[data-values]').parentElement;
+  return spacer.getBoundingClientRect().height;
+});
+await scrollTo(Math.round(valuesTop + pinLen * 0.6));
 await page.waitForTimeout(1200);
+const activeLetter = await page.evaluate(() => document.querySelector('.values__cell.is-active')?.textContent?.trim());
+check('Valores: la letra activa cambia con el scroll', Boolean(activeLetter) && activeLetter !== 'C', activeLetter ?? '');
 await shot('07-valores');
 
 // --- Menú móvil

@@ -1,17 +1,37 @@
 ---
 /**
- * Schema global (CLAUDE.md §9): Organization + ProfessionalService en un único @graph,
- * más WebSite en la home. Los schemas de cada página enlazan con `orgId`.
+ * Schema global (CLAUDE.md §9), en un único @graph:
+ * - Organization + ProfessionalService (negocio local): contacto, dirección, zona de servicio,
+ *   catálogo de servicios con precio de entrada y fundador.
+ * - WebSite en la home.
+ * - WebPage (o ContactPage, AboutPage, CollectionPage…) en cada página indexable.
+ * Los schemas propios de cada página (Service, FAQPage, BreadcrumbList, BlogPosting) enlazan con `orgId`.
  * `sameAs` se omite mientras las redes sean placeholders.
  */
 import { legal, schemaIds, site } from '@/data/site';
+import { motto } from '@/data/values';
+import { serviceHref, services } from '@/data/services';
+
+export type PageType = 'WebPage' | 'ContactPage' | 'AboutPage' | 'CollectionPage' | 'FAQPage';
+
+interface Props {
+  title?: string;
+  description?: string;
+  pageType?: PageType;
+  noindex?: boolean;
+}
+const { title = site.defaultTitle, description = site.defaultDescription, pageType = 'WebPage', noindex = false } = Astro.props;
 
 const orgId = schemaIds.organization;
 const websiteId = schemaIds.website;
+const pageUrl = new URL(Astro.url.pathname, site.url).href;
 
 const isHome = Astro.url.pathname === '/';
 const isPlaceholder = (v: string) => v.includes('[');
 const sameAs = site.social.map((s) => s.href).filter((href) => !isPlaceholder(href));
+
+/** Municipios con más hostelería de Mallorca: zona de servicio explícita para el SEO local. */
+const towns = ['Palma', 'Calvià', 'Llucmajor', 'Marratxí', 'Inca', 'Manacor', 'Alcúdia', 'Pollença', 'Sóller', 'Santanyí'];
 
 const graph: Record<string, unknown>[] = [
   {
@@ -19,32 +39,59 @@ const graph: Record<string, unknown>[] = [
     '@id': orgId,
     name: site.name,
     alternateName: site.shortName,
-    url: site.url,
+    url: `${site.url}/`,
     logo: { '@type': 'ImageObject', url: `${site.url}/icon-512.png`, width: 512, height: 512 },
     image: `${site.url}${site.ogImage}`,
     description: site.defaultDescription,
+    slogan: motto,
     email: site.contact.email,
-    telephone: site.contact.phone,
+    telephone: site.contact.phoneHref,
+    priceRange: '50 € – 1.090 € al mes',
+    currenciesAccepted: 'EUR',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: legal.address,
-      addressLocality: 'Palma',
+      streetAddress: legal.street,
+      postalCode: legal.postalCode,
+      addressLocality: legal.locality,
       addressRegion: site.contact.region,
       addressCountry: 'ES',
     },
     areaServed: [
-      { '@type': 'City', name: 'Palma' },
       { '@type': 'AdministrativeArea', name: 'Mallorca' },
+      ...towns.map((name) => ({ '@type': 'City', name })),
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      contactType: 'customer service',
+      contactType: 'sales',
       email: site.contact.email,
-      telephone: site.contact.phone,
+      telephone: site.contact.phoneHref,
       areaServed: 'ES',
-      availableLanguage: ['es'],
+      availableLanguage: ['es', 'en'],
     },
-    knowsAbout: ['Marketing para restaurantes', 'Gestión de redes sociales', 'Reservas para restaurantes', 'Fidelización de clientes'],
+    founder: { '@type': 'Person', name: legal.holder },
+    knowsAbout: [
+      'Marketing para restaurantes',
+      'Marketing para bares y cafeterías',
+      'Gestión de redes sociales para restaurantes',
+      'SEO local y Google Business Profile',
+      'Reservas telefónicas con inteligencia artificial',
+      'Programas de fidelización con Apple Wallet y Google Wallet',
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Servicios de marketing para restaurantes',
+      itemListElement: services.map((s) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: s.name, url: `${site.url}${serviceHref(s)}` },
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          price: s.fromPrice,
+          priceCurrency: 'EUR',
+          unitText: 'MON',
+          valueAddedTaxIncluded: false,
+        },
+      })),
+    },
     ...(sameAs.length ? { sameAs } : {}),
   },
 ];
@@ -57,6 +104,19 @@ if (isHome) {
     url: `${site.url}/`,
     inLanguage: 'es-ES',
     publisher: { '@id': orgId },
+  });
+}
+
+if (!noindex) {
+  graph.push({
+    '@type': pageType,
+    '@id': `${pageUrl}#webpage`,
+    url: pageUrl,
+    name: title,
+    description,
+    inLanguage: 'es-ES',
+    isPartOf: { '@id': websiteId },
+    about: { '@id': orgId },
   });
 }
 

@@ -7,7 +7,7 @@ const service: Service = {
   benefit: 'Contesta cada llamada y gestiona tus reservas 24/7, en 6 idiomas.',
   available: true,
   image,
-  imageAlt: 'Tenedor de latón flotando sobre fondo crema.',
+  imageAlt: 'Auricular de teléfono de latón flotando, con ondas de sonido saliendo de él.',
   cta: 'Quiero el agente de IA',
   h1: 'Sistema de reservas telefónicas con IA para *restaurantes*',
   metaTitle: 'Reservas telefónicas con IA para restaurantes | CERAMIS',

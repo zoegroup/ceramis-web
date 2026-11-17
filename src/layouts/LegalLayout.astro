@@ -3,6 +3,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@/components/Breadcrumbs.astro';
 import { formatDate } from '@/lib/blog';
+import { legal } from '@/data/site';
 import '@/styles/prose.css';
 
 interface Props {
@@ -28,8 +29,8 @@ const { title, seoTitle, description, path, updated, sections } = Astro.props;
       <h1>{title}</h1>
       <p class="legal__updated">Última actualización: <time datetime={updated.toISOString()}>{formatDate(updated)}</time></p>
       <p class="legal__notice" role="note">
-        Plantilla pendiente de revisión por un asesor legal. La sociedad está en constitución: los datos entre
-        corchetes se completarán cuando esté inscrita.
+        Si tienes cualquier duda sobre este texto o sobre tus datos, escríbenos a
+        <a href={`mailto:${legal.email}`}>{legal.email}</a>.
       </p>
     </header>
 

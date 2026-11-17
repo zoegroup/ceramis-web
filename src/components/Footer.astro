@@ -33,7 +33,7 @@ const year = new Date().getFullYear();
         <address>
           <ul role="list" aria-labelledby="f-contacto">
             <li><a href={`mailto:${site.contact.email}`}>{site.contact.email}</a></li>
-            <li><a href={`tel:${site.contact.phone}`}>{site.contact.phone}</a></li>
+            <li><a href={`tel:${site.contact.phoneHref}`}>{site.contact.phone}</a></li>
             <li><a href={whatsappHref} rel="noopener" target="_blank">WhatsApp</a></li>
             <li>{site.contact.city}</li>
           </ul>

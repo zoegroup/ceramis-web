@@ -7,8 +7,7 @@ const service: Service = {
   benefit: 'Que te encuentren en Google Maps cuando buscan dónde comer cerca.',
   available: true,
   image,
-  imageAlt: 'Mapa del centro de Palma con un restaurante destacado y su ficha de Google.',
-  imagePosition: '79% 50%',
+  imageAlt: 'Pin de mapa de latón sobre una baldosa de cerámica con el relieve de las calles de una ciudad.',
   cta: 'Quiero aparecer en Google Maps',
   h1: 'SEO local para restaurantes en Mallorca: aparece en *Google Maps*',
   metaTitle: 'SEO local para restaurantes en Mallorca | CERAMIS',
@@ -82,7 +81,7 @@ const service: Service = {
   pricing: {
     kind: 'single',
     monthly: 149,
-    setup: 190,
+    setup: 50,
     summary: 'Incluido en el plan Captación de redes sociales.',
     includes: [
       'Auditoría y optimización completa de la ficha el primer mes',

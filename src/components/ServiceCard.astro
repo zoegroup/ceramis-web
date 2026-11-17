@@ -1,6 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
-import { euros, serviceHref, waitlistHref, type Service } from '@/data/services';
+import { serviceHref, waitlistHref, type Service } from '@/data/services';
 
 interface Props {
   service: Service;
@@ -27,7 +27,6 @@ const titleId = `servicio-${service.slug}`;
     <p class="service-card__meta">
       <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
       {!service.available && <span class="service-card__badge">Próximamente</span>}
-      <span class="service-card__price">Desde {euros(service.fromPrice)}/mes</span>
     </p>
     <h3 class="h3" id={titleId}>{service.name}</h3>
     <p class="service-card__benefit">{service.benefit}</p>
@@ -100,12 +99,6 @@ const titleId = `servicio-${service.slug}`;
     letter-spacing: var(--tracking-wide);
     color: var(--c-ink-soft);
   }
-  .service-card__price {
-    margin-left: auto;
-    letter-spacing: 0.04em;
-    text-transform: none;
-    color: var(--c-accent);
-  }
   .service-card__badge {
     padding: 0.2em 0.7em;
     border: 1px solid var(--c-accent);
@@ -144,5 +137,19 @@ const titleId = `servicio-${service.slug}`;
   .service-card:has(.service-card__link:focus-visible) {
     outline: 2px solid var(--c-accent);
     outline-offset: 3px;
+  }
+
+  /* Móvil: imagen más baja y menos relleno para que la tarjeta quepa entera en pantalla. */
+  @media (max-width: 767.98px) {
+    .service-card__media {
+      aspect-ratio: 16 / 10;
+    }
+    .service-card__body {
+      padding: var(--space-m);
+      gap: var(--space-2xs);
+    }
+    .service-card__link {
+      margin-top: var(--space-2xs);
+    }
   }
 </style>

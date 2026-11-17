@@ -1,9 +1,11 @@
 /**
- * Formularios [data-form]: validación en cliente, antispam y envío JSON a PUBLIC_FORM_ENDPOINT.
+ * Formularios [data-form]: validación en cliente, antispam y envío JSON a la función de Cloudflare
+ * `/api/contacto` (functions/api/contacto.ts), que lo manda por email. PUBLIC_FORM_ENDPOINT permite
+ * usar otro destino (p. ej. un webhook de n8n).
  * - Errores por campo (aria-invalid + texto enlazado con aria-describedby) y foco al primero.
  * - Estado global en una región aria-live (enviando, éxito, error).
  * - Antispam: honeypot `web` y tiempo mínimo desde que se carga la página.
- * - Sin endpoint: en dev se simula el envío (payload en consola); en producción, error amable.
+ * - En `astro dev` no hay funciones de Cloudflare: si no hay endpoint propio, se simula el envío.
  * - `data-success` en el <form> cambia el mensaje de éxito (p. ej. lista de espera).
  */
 import { PUBLIC_FORM_ENDPOINT } from 'astro:env/client';
@@ -50,16 +52,16 @@ function setStatus(el: HTMLElement | null, state: 'idle' | 'sending' | 'success'
   el.textContent = text;
 }
 
+/** Destino del formulario: el configurado o la función de Cloudflare del propio sitio. */
+const ENDPOINT = PUBLIC_FORM_ENDPOINT || '/api/contacto';
+
 async function send(payload: Record<string, unknown>) {
-  if (!PUBLIC_FORM_ENDPOINT) {
-    if (import.meta.env.DEV) {
-      console.info('[form] PUBLIC_FORM_ENDPOINT vacío: envío simulado', payload);
-      await new Promise((r) => setTimeout(r, 700));
-      return;
-    }
-    throw new Error('PUBLIC_FORM_ENDPOINT no configurado');
+  if (import.meta.env.DEV && !PUBLIC_FORM_ENDPOINT) {
+    console.info('[form] astro dev: envío simulado (en producción va a /api/contacto)', payload);
+    await new Promise((r) => setTimeout(r, 700));
+    return;
   }
-  const res = await fetch(PUBLIC_FORM_ENDPOINT, {
+  const res = await fetch(ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(payload),

@@ -6,7 +6,7 @@
  */
 import Button from '@/components/Button.astro';
 import CtaNote from '@/components/CtaNote.astro';
-import { legal } from '@/data/site';
+import { legal, site } from '@/data/site';
 import { services } from '@/data/services';
 
 interface Props {
@@ -107,7 +107,7 @@ const f = (name: string) => `${id}-${name}`;
   </div>
 
   <dl class="cta-form__rgpd" id={f('rgpd')}>
-    <div><dt>Responsable</dt><dd>{legal.company}</dd></div>
+    <div><dt>Responsable</dt><dd>{legal.holder} ({site.name})</dd></div>
     <div><dt>Finalidad</dt><dd>Responder a tu solicitud y preparar tu diagnóstico.</dd></div>
     <div><dt>Legitimación</dt><dd>Tu consentimiento.</dd></div>
     <div><dt>Destinatarios</dt><dd>No cedemos tus datos a terceros, salvo obligación legal.</dd></div>
