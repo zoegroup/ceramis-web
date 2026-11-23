@@ -15,6 +15,8 @@ import FAQ from '@/components/FAQ.astro';
 import RoiCalculator from '@/components/RoiCalculator.astro';
 import CtaSection from '@/components/CtaSection.astro';
 import ServiceCard from '@/components/ServiceCard.astro';
+import BlogTeaser from '@/components/blog/BlogTeaser.astro';
+import { getPosts } from '@/lib/blog';
 import { serviceHref, services, type Service } from '@/data/services';
 import { schemaIds, site } from '@/data/site';
 import { plain } from '@/lib/text';
@@ -24,6 +26,8 @@ interface Props {
 }
 const { service } = Astro.props;
 const others = services.filter((s) => s.slug !== service.slug);
+/** Artículos del blog asociados a este servicio (campo `service` del post). */
+const servicePosts = (await getPosts()).filter((p) => p.data.service === service.slug);
 const base = Astro.site ?? site.url;
 
 const schema = {
@@ -142,6 +146,10 @@ const schema = {
       <FAQ items={service.faq} />
     </div>
   </section>
+
+  <BlogTeaser posts={servicePosts} id="blog-servicio-titulo" eyebrow="Guías relacionadas">
+    <Fragment slot="title">Antes de decidir, <em>léete</em> esto.</Fragment>
+  </BlogTeaser>
 
   <CtaSection service={service.slug} />
 

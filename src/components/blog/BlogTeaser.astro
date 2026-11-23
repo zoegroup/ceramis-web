@@ -1,0 +1,85 @@
+---
+/**
+ * Bloque "Del blog": hasta 3 artículos con enlace al blog. Se usa en la home (los más recientes)
+ * y en cada servicio (los artículos de ese servicio). Además de dar contenido útil, enlaza las
+ * páginas importantes con los artículos, lo que ayuda a Google a descubrirlos y valorarlos.
+ */
+import SectionHeader from '@/components/SectionHeader.astro';
+import PostCard from '@/components/blog/PostCard.astro';
+import type { Post } from '@/lib/blog';
+
+interface Props {
+  posts: Post[];
+  id: string;
+  eyebrow?: string;
+  /** Fondo arena en lugar de crema (para alternar con la sección anterior). */
+  sand?: boolean;
+}
+const { posts, id, eyebrow = 'Del blog', sand = false } = Astro.props;
+---
+
+{
+  posts.length > 0 && (
+    <section class:list={['blog-teaser', sand && 'blog-teaser--sand']} aria-labelledby={id}>
+      <div class="container">
+        <div class="blog-teaser__head">
+          <SectionHeader eyebrow={eyebrow} id={id}>
+            <Fragment slot="title">
+              <slot name="title" />
+            </Fragment>
+            <slot />
+          </SectionHeader>
+          <a class="blog-teaser__all" href="/blog/">
+            Ver todos los artículos <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <ul class="blog-teaser__grid" role="list">
+          {posts.slice(0, 3).map((p) => (
+            <li>
+              <PostCard post={p} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .blog-teaser {
+    padding-block: var(--space-3xl);
+    border-top: var(--line);
+  }
+  .blog-teaser--sand {
+    background: var(--c-sand);
+    border-top: 0;
+  }
+  .blog-teaser__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-s) var(--space-xl);
+    margin-bottom: var(--space-xl);
+  }
+  .blog-teaser__head :global(.section-header) {
+    margin-bottom: 0;
+  }
+  .blog-teaser__all {
+    font-weight: 500;
+    color: var(--c-accent);
+    text-decoration-color: var(--c-brass);
+    text-underline-offset: 0.3em;
+    white-space: nowrap;
+  }
+  .blog-teaser__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-l);
+  }
+  @media (max-width: 899.98px) {
+    .blog-teaser__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

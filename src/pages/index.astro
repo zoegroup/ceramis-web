@@ -10,7 +10,11 @@ import CaseStudy from '@/components/home/CaseStudy.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
 import FAQ from '@/components/FAQ.astro';
 import CtaSection from '@/components/CtaSection.astro';
+import BlogTeaser from '@/components/blog/BlogTeaser.astro';
 import { homeFaq } from '@/data/faq';
+import { getPosts } from '@/lib/blog';
+
+const latestPosts = (await getPosts()).slice(0, 3);
 ---
 
 <BaseLayout transparentHeader>
@@ -23,6 +27,10 @@ import { homeFaq } from '@/data/faq';
   <ValuesGrid />
   <Process />
   <CaseStudy />
+  <BlogTeaser posts={latestPosts} id="blog-titulo">
+    <Fragment slot="title">Ideas para llenar tu <em>restaurante</em>.</Fragment>
+    Guías prácticas de marketing para restaurantes, bares y cafeterías en Mallorca.
+  </BlogTeaser>
 
   <section class="home-faq" aria-labelledby="faq-titulo">
     <div class="home-faq__inner container">
@@ -41,7 +49,8 @@ import { homeFaq } from '@/data/faq';
     padding-block: var(--space-3xl);
   }
   /* Si el caso real está visible, ambos van sobre crema: los separa una línea. */
-  :global(.case) + .home-faq {
+  :global(.case) + .home-faq,
+  :global(.blog-teaser) + .home-faq {
     border-top: var(--line);
   }
   .home-faq__inner {

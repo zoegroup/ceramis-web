@@ -2,6 +2,18 @@
 import { defineConfig, envField } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import { readdirSync, readFileSync } from 'node:fs';
+
+/** Fecha de cada artículo (updated o date del frontmatter) para el <lastmod> del sitemap. */
+const postDates = Object.fromEntries(
+  readdirSync('src/content/blog')
+    .filter((f) => f.endsWith('.mdx'))
+    .map((f) => {
+      const fm = readFileSync(`src/content/blog/${f}`, 'utf8');
+      const d = fm.match(/^updated:\s*(\S+)/m)?.[1] ?? fm.match(/^date:\s*(\S+)/m)?.[1];
+      return [`/blog/${f.replace(/\.mdx$/, '')}/`, d];
+    })
+);
 
 export default defineConfig({
   site: 'https://ceramisagency.com',
@@ -18,7 +30,14 @@ export default defineConfig({
   integrations: [
     mdx(),
     // Las legales y las etiquetas del blog llevan noindex: fuera del sitemap.
-    sitemap({ filter: (page) => !/\/(aviso-legal|privacidad|cookies)\/$|\/blog\/etiqueta\//.test(page) }),
+    sitemap({
+      filter: (page) => !/\/(aviso-legal|privacidad|cookies)\/$|\/blog\/etiqueta\//.test(page),
+      // <lastmod> solo donde la fecha es real (artículos): así Google sabe qué volver a rastrear.
+      serialize: (item) => {
+        const date = postDates[new URL(item.url).pathname];
+        return date ? { ...item, lastmod: new Date(date).toISOString() } : item;
+      },
+    }),
   ],
   devToolbar: { enabled: false },
   // Precarga la página de cualquier enlace interno al pasar el ratón o tocarlo: la navegación es casi instantánea.
