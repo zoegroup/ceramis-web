@@ -17,7 +17,10 @@ import { getPosts } from '@/lib/blog';
 const latestPosts = (await getPosts()).slice(0, 3);
 ---
 
-<BaseLayout transparentHeader>
+<BaseLayout
+  transparentHeader
+  title="The CERAMIS Agency | Marketing para restaurantes en Mallorca"
+>
   <link slot="head" rel="preload" as="image" href="/hero/poster-mobile.webp" media="(max-width: 767.98px)" fetchpriority="high" />
   <link slot="head" rel="preload" as="image" href="/hero/poster-desktop.webp" media="(min-width: 768px)" fetchpriority="high" />
   <HeroScroll />

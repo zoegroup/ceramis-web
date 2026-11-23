@@ -1,5 +1,5 @@
 ---
-import { legalNav, nav, site, whatsappHref } from '@/data/site';
+import { legalNav, nav, profiles, site, whatsappHref } from '@/data/site';
 import { serviceHref, services } from '@/data/services';
 
 const year = new Date().getFullYear();
@@ -38,8 +38,8 @@ const year = new Date().getFullYear();
             <li>{site.contact.city}</li>
           </ul>
         </address>
-        <ul class="site-footer__social" role="list" aria-label="Redes sociales">
-          {site.social.map((s) => <li><a href={s.href} rel="noopener" target="_blank">{s.label}</a></li>)}
+        <ul class="site-footer__social" role="list" aria-label="Redes sociales y Google">
+          {profiles.map((s) => <li><a href={s.href} rel="noopener" target="_blank">{s.label}</a></li>)}
         </ul>
       </div>
     </div>

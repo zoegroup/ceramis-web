@@ -26,12 +26,24 @@ export const site = {
     /** El mapa y las indicaciones apuntan al centro de Palma, no al domicilio del titular. */
     mapsHref: 'https://www.google.com/maps/search/?api=1&query=Palma+de+Mallorca',
   },
+  /** Ficha de Google Business Profile (ID del Knowledge Graph). Va al schema (sameAs) y al footer. */
+  googleProfile: 'https://www.google.com/search?kgmid=/g/11z_j_zf9t',
+  /** Variantes del nombre con las que nos buscan: schema (alternateName). */
+  alternateNames: ['CERAMIS', 'Ceramis Agency', 'The Ceramis Agency', 'CERAMIS Agency'],
   social: [
     { label: 'Instagram', href: 'https://instagram.com/[USUARIO]' },
     { label: 'TikTok', href: 'https://tiktok.com/@[USUARIO]' },
     { label: 'LinkedIn', href: 'https://linkedin.com/company/[USUARIO]' },
   ],
 } as const;
+
+const isPlaceholder = (href: string) => href.includes('[');
+
+/** Perfiles públicos ya creados (sin placeholders) más la ficha de Google: footer y schema. */
+export const profiles = [
+  ...site.social.filter((s) => !isPlaceholder(s.href)),
+  { label: 'Reseñas en Google', href: site.googleProfile },
+];
 
 /** @id de los nodos globales de schema.org (ver SchemaOrg.astro). */
 export const schemaIds = {
