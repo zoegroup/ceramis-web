@@ -31,8 +31,8 @@ export const site = {
   /** Variantes del nombre con las que nos buscan: schema (alternateName). */
   alternateNames: ['CERAMIS', 'Ceramis Agency', 'The Ceramis Agency', 'CERAMIS Agency'],
   social: [
-    { label: 'Instagram', href: 'https://instagram.com/[USUARIO]' },
-    { label: 'TikTok', href: 'https://tiktok.com/@[USUARIO]' },
+    { label: 'Instagram', href: 'https://www.instagram.com/juanda.ceramis/' },
+    { label: 'TikTok', href: 'https://www.tiktok.com/@juanda.ceramis' },
     { label: 'LinkedIn', href: 'https://linkedin.com/company/[USUARIO]' },
   ],
 } as const;
